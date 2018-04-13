@@ -20,8 +20,8 @@
     },
     "autoload": {
         "classmap": [
-            "database/seeds",
-            "database/factories"
+            "database",
+            "app/libs/phpexcels"
         ],
         "psr-4": {
             "App\\": "app/"
