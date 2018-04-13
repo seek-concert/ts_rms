@@ -97,7 +97,7 @@
                             <div class="profile-info-row">
                                 <div class="profile-info-name"> 面积： </div>
                                 <div class="profile-info-value">
-                                    <span class="editable editable-click">{{$sdata['itemland']->area}}</span>
+                                    <span class="editable editable-click">{{$sdata['itemland']->area}}㎡</span>
                                 </div>
                             </div>
 

@@ -86,7 +86,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="area"> 占地面积： </label>
             <div class="col-sm-9">
-                <input type="text" id="area" name="area" value="{{$sdata['itemland']->area}}" class="col-xs-10 col-sm-5"  placeholder="请输入占地面积" required>
+                <input type="text" id="area" name="area" value="{{$sdata['itemland']->area}}" class="col-xs-10 col-sm-5"  placeholder="请输入占地面积,填写数字或小数,小数精确到第二位" required>
             </div>
         </div>
         <div class="space-4"></div>
