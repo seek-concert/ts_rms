@@ -10,6 +10,7 @@
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
+            <th><input type="checkbox"></th>
             <th>房源序号</th>
             <th>管理机构</th>
             <th>房源社区</th>
@@ -28,6 +29,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
+                        <td><input type="checkbox"></td>
                         <td>{{$loop->iteration}}</td>
                         <td>{{$infos->housecompany->name}}</td>
                         <td>{{$infos->housecommunity->name}}</td>
