@@ -251,3 +251,163 @@ function create_guid(){
         .substr($charid,16, 4).$hyphen.substr($charid,20,12);
     return $guid;
 }
+/** 数组转xls格式的excel文件
+ * @param  array  $data      需要生成excel文件的数组
+ * @param  string $filename  生成的excel文件名
+ *      示例数据：
+$data = array(
+array(NULL, 2010, 2011, 2012),
+array('Q1',   12,   15,   21),
+array('Q2',   56,   73,   86),
+array('Q3',   52,   61,   69),
+array('Q4',   30,   32,    0),
+);
+ */
+function create_housetitle_xls($data,$filename='simple.xls'){
+
+    ini_set('max_execution_time', '0');
+    vendor("PHPExcels.PHPExcel");
+    $filename=str_replace('.xls', '', $filename).'.xls';
+    $filename = iconv("utf-8", "gb2312", $filename);
+    $phpexcel = new \PHPExcel();
+    $phpexcel->getProperties()
+        ->setCreator("Maarten Balliauw")
+        ->setLastModifiedBy("Maarten Balliauw")
+        ->setTitle("Office 2007 XLSX Test Document")
+        ->setSubject("Office 2007 XLSX Test Document")
+        ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+        ->setKeywords("office 2007 openxml php")
+        ->setCategory("Test result file");
+
+    // 设置个表格宽度
+    $phpexcel->getActiveSheet()->getColumnDimension('A')->setWidth(10);
+    $phpexcel->getActiveSheet()->getColumnDimension('B')->setWidth(16);
+    $phpexcel->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+    $phpexcel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
+    $phpexcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
+    $phpexcel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
+    $phpexcel->getActiveSheet()->getColumnDimension('G')->setWidth(18);
+    $phpexcel->getActiveSheet()->getColumnDimension('H')->setWidth(16);
+    $phpexcel->getActiveSheet()->getColumnDimension('I')->setWidth(30);
+    $phpexcel->getActiveSheet()->getColumnDimension('J')->setWidth(16);
+
+    // 水平居中（位置很重要，建议在最初始位置）
+    $phpexcel->setActiveSheetIndex(0)->getStyle('A')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('B')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('C')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('D')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('E')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('F')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('G')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('H')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('I')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('J')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+//    设置单元格的值
+    $phpexcel->getActiveSheet()->getStyle('G')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+    $phpexcel->getActiveSheet()->fromArray($data);
+    $phpexcel->getActiveSheet()->setTitle('Sheet1');
+    $phpexcel->setActiveSheetIndex(0);
+    ob_end_clean();
+    header('Content-Type: application/vnd.ms-excel');
+    header("Content-Disposition: attachment;filename=$filename");
+    header('Cache-Control: max-age=0');
+    header('Cache-Control: max-age=1');
+    header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+    header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+    header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+    header ('Pragma: public'); // HTTP/1.0
+    $objwriter = PHPExcel_IOFactory::createWriter($phpexcel, 'Excel5');
+    $objwriter->save('php://output');
+    exit;
+}
+
+function create_houses_xls($data,$filename='simple.xls'){
+
+    ini_set('max_execution_time', '0');
+    vendor("PHPExcels.PHPExcel");
+    $filename=str_replace('.xls', '', $filename).'.xls';
+    $filename = iconv("utf-8", "gb2312", $filename);
+    $phpexcel = new \PHPExcel();
+    $phpexcel->getProperties()
+        ->setCreator("Maarten Balliauw")
+        ->setLastModifiedBy("Maarten Balliauw")
+        ->setTitle("Office 2007 XLSX Test Document")
+        ->setSubject("Office 2007 XLSX Test Document")
+        ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+        ->setKeywords("office 2007 openxml php")
+        ->setCategory("Test result file");
+
+    // 设置个表格宽度
+    $phpexcel->getActiveSheet()->getColumnDimension('A')->setWidth(16);
+    $phpexcel->getActiveSheet()->getColumnDimension('B')->setWidth(20);
+    $phpexcel->getActiveSheet()->getColumnDimension('C')->setWidth(8);
+    $phpexcel->getActiveSheet()->getColumnDimension('D')->setWidth(8);
+    $phpexcel->getActiveSheet()->getColumnDimension('E')->setWidth(8);
+    $phpexcel->getActiveSheet()->getColumnDimension('F')->setWidth(8);
+    $phpexcel->getActiveSheet()->getColumnDimension('G')->setWidth(18);
+    $phpexcel->getActiveSheet()->getColumnDimension('H')->setWidth(16);
+    $phpexcel->getActiveSheet()->getColumnDimension('I')->setWidth(16);
+    $phpexcel->getActiveSheet()->getColumnDimension('J')->setWidth(16);
+    $phpexcel->getActiveSheet()->getColumnDimension('K')->setWidth(20);
+    $phpexcel->getActiveSheet()->getColumnDimension('L')->setWidth(24);
+    $phpexcel->getActiveSheet()->getColumnDimension('M')->setWidth(20);
+    $phpexcel->getActiveSheet()->getColumnDimension('N')->setWidth(46);
+    $phpexcel->getActiveSheet()->getColumnDimension('O')->setWidth(40);
+    $phpexcel->getActiveSheet()->getColumnDimension('P')->setWidth(40);
+    $phpexcel->getActiveSheet()->getColumnDimension('Q')->setWidth(40);
+
+    // 水平居中（位置很重要，建议在最初始位置）
+    $phpexcel->setActiveSheetIndex(0)->getStyle('A')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('B')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('C')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('D')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('E')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('F')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('G')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('H')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('I')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('J')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('K')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('L')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('M')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('N')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('O')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('P')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('Q')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+    //    设置单元格的值
+    $phpexcel->getActiveSheet()->getStyle('A')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('B')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('C')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('D')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('E')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('F')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('G')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('H')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('I')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('J')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('K')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('L')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('M')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('N')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('O')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('P')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+    $phpexcel->getActiveSheet()->getStyle('Q')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+
+    $phpexcel->getActiveSheet()->fromArray($data);
+    $phpexcel->getActiveSheet()->setTitle('Sheet1');
+    $phpexcel->setActiveSheetIndex(0);
+    ob_end_clean();
+    header('Content-Type: application/vnd.ms-excel');
+    header("Content-Disposition: attachment;filename=$filename");
+    header('Cache-Control: max-age=0');
+    header('Cache-Control: max-age=1');
+    header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+    header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+    header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+    header ('Pragma: public'); // HTTP/1.0
+    $objwriter = PHPExcel_IOFactory::createWriter($phpexcel, 'Excel5');
+    $objwriter->save('php://output');
+    exit;
+}

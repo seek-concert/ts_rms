@@ -3,8 +3,6 @@
 
 {{-- 页面内容 --}}
 @section('content')
-
-
     <div class="well well-sm">
         <a href="{{route('g_house_add')}}" class="btn">添加房源</a>
     </div>

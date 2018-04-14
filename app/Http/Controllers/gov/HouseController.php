@@ -72,7 +72,7 @@ class HouseController extends BaseauthController
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
         $displaynum=$request->input('displaynum');
-        $displaynum=$displaynum?$displaynum:15;
+        $displaynum=$displaynum?$displaynum:200;
         $infos['displaynum']=$displaynum;
         /* ********** 是否删除 ********** */
         $deleted=$request->input('deleted');
@@ -113,7 +113,7 @@ class HouseController extends BaseauthController
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
-            $edata=$exception;
+            $edata=null;
             $url=null;
         }
         DB::commit();

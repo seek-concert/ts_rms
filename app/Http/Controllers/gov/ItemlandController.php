@@ -183,7 +183,7 @@ class ItemlandController extends BaseitemController
             /* ********** 保存 ********** */
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
-                'address' => 'required|unique:item_land',
+                'address' => 'required',
                 'land_prop_id' => 'required',
                 'land_source_id' => 'required',
                 'land_state_id' => 'required',
