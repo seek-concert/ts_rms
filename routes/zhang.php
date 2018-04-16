@@ -249,3 +249,9 @@ Route::any('/itemcompany_add','ItemcompanyController@add')->name('g_itemcompany_
 Route::get('/itemcompany_info','ItemcompanyController@info')->name('g_itemcompany_info');
 Route::any('/itemcompany_edit','ItemcompanyController@edit')->name('g_itemcompany_edit');
 
+
+/*+++++++++++++++ 【Excel导出导入】 ++++++++++++++++*/
+/*---------- 房源 ----------*/
+Route::any('/house_export','HouseController@house_export')->name('g_house_export');
+/*---------- 房源导入示例 ----------*/
+Route::any('/house_import_demo','HouseController@house_import_demo')->name('g_house_import_demo');

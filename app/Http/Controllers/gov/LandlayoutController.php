@@ -154,6 +154,7 @@ class LandlayoutController extends BaseitemController
             $rules = [
                 'land_id' => 'required',
                 'name' => 'required',
+                'area' => 'required',
                 'gov_img' => 'required'
             ];
             $messages = [
@@ -192,7 +193,7 @@ class LandlayoutController extends BaseitemController
                 $item->save();
                 /* ++++++++++ 地块户型是否存在 ++++++++++ */
                 $name = $request->input('name');
-                $landlayout = Landlayout::where('item_id',$item_id)->where('land_id',$request->input('land_id'))->where('name',$name)->lockForUpdate()->first();
+                $landlayout = Landlayout::where('item_id',$item_id)->where('land_id',$request->input('land_id'))->where('name',$name)->where('area',$request->input('area'))->lockForUpdate()->first();
                 if(blank($landlayout)){
                     /* ++++++++++ 新增数据 ++++++++++ */
                     $landlayout = $model;

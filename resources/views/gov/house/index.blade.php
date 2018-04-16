@@ -5,7 +5,19 @@
 @section('content')
     <div class="well well-sm">
         <a href="{{route('g_house_add')}}" class="btn">添加房源</a>
+        <form action="{{route('g_house_export')}}" method="post" class="btn" onclick="export_house('all')">
+            {{csrf_field()}}
+            <input type="hidden" name="ids" id="ids" value="">
+             <span>导出房源</span>
+        </form>
+        <form action="{{route('g_house_export')}}" method="post" class="btn" data-toggle="modal" data-target="#import_house">
+            {{csrf_field()}}
+            <input type="hidden" name="ids" id="ids" value="">
+            <span>导入房源</span>
+        </form>
+
     </div>
+
 
     <table class="table table-hover table-bordered">
         <thead>
@@ -29,7 +41,7 @@
             @if($code=='success')
                 @foreach($sdata as $infos)
                     <tr>
-                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox" name="ids[]" value="{{$infos->id}}"></td>
                         <td>{{$loop->iteration}}</td>
                         <td>{{$infos->housecompany->name}}</td>
                         <td>{{$infos->housecommunity->name}}</td>
@@ -90,6 +102,44 @@
             </div>
         </div>
     </div>
+
+    {{--导出数据弹窗--}}
+    <div class="modal fade" id="import_house" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">房源导入</h4>
+                </div>
+                <div class="modal-body">
+                    <span style="color: red;">温馨提示：请先下载房源导入的模板！</span>
+                    <form action="{{route('g_house_import_demo')}}" method="post" class="btn">
+                        {{csrf_field()}}
+                        <input type="hidden" name="ids" id="ids" value="">
+                        <p>下载房源导入格式</p>
+                    </form>
+                    <form action="" enctype="multipart/form-data" >
+                        <div class="form-group img-box">
+                            <label class="col-sm-3 control-label no-padding-right">
+                                <span class="btn btn-xs">
+                                    <span>导入房源</span>
+                                    <input type="file" accept="image/*" class="hidden">
+                                </span>
+                            </label>
+                        </div>
+                    </form>
+
+                    <br/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary del_ok">确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 {{-- 样式 --}}
@@ -130,6 +180,28 @@
             }
             return false;
         });
+
+
+        /*--------- 房源导出 ----------*/
+        function export_house(rs) {
+            var ids = "";
+            if (rs == "all") {
+                var checkedlist = $("input[name=\"ids[]\"]:checked");
+                for (var i = 0; i < checkedlist.length; i++) {
+                    ids += $(checkedlist[i]).val();
+                    if (i < checkedlist.length - 1) ids += ",";
+                }
+            }else {
+                ids = rs;
+            }
+            if (ids == "") {
+                toastr.error('请勾选要导出的房源!', { icon: 1, time: 1000 });
+                return false;
+            }
+            $("#ids").val(ids);
+            $("#ids").parent('form').submit();
+        }
+        /*--------- 房源导入 ----------*/
 
     </script>
 @endsection
