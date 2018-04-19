@@ -397,10 +397,14 @@ class HouseholdController extends BaseitemController
                 throw new \Exception('删除失败',404404);
             }
             /*---------删除被征户详情----------*/
-            $householddetail = Householddetail::where('household_id',$ids)->forceDelete();
-            if(!$householddetail){
-                throw new \Exception('删除失败',404404);
+            $householddetail = Householddetail::where('household_id',$ids)->first();
+            if($householddetail){
+                $householddetails = Householddetail::where('household_id',$ids)->forceDelete();
+                if(!$householddetails){
+                    throw new \Exception('删除失败',404404);
+                }
             }
+
 
             $code='success';
             $msg='删除成功';

@@ -535,10 +535,14 @@ class HouseholdmemberController extends BaseitemController
                 throw new \Exception('删除失败',404404);
             }
             /*---------删除家庭成员下的特殊人群----------*/
-            $householdmembercrowd = Householdmembercrowd::where('member_id',$ids)->forceDelete();
-            if(!$householdmembercrowd){
-                throw new \Exception('删除失败',404404);
+            $householdmembercrowd = Householdmembercrowd::where('member_id',$ids)->count();
+            if($householdmembercrowd){
+                $householdmembercrowds = Householdmembercrowd::where('member_id',$ids)->forceDelete();
+                if(!$householdmembercrowds){
+                    throw new \Exception('删除失败',404404);
+                }
             }
+
 
             $code='success';
             $msg='删除成功';
