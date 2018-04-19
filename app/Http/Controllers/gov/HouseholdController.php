@@ -139,10 +139,6 @@ class HouseholdController extends BaseitemController
             /* ++++++++++ 表单验证 ++++++++++ */
             $rules = [
                 'land_id' => 'required',
-                'building_id' => 'required',
-                'unit' => 'required',
-                'floor' => 'required',
-                'number' => 'required',
                 'type' => 'required',
                 'username' => 'required|unique:item_household',
                 'password' => 'required'
@@ -269,9 +265,6 @@ class HouseholdController extends BaseitemController
             $model=new Household();
             /* ********** 表单验证 ********** */
             $rules = [
-                'unit' => 'required',
-                'floor' => 'required',
-                'number' => 'required',
                 'type' => 'required',
                 'username' => 'required|unique:item_household,username,'.$id.',id',
                 'password' => 'required'
