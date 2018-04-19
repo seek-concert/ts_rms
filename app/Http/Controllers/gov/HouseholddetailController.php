@@ -559,7 +559,7 @@ class HouseholddetailController extends BaseitemController
                             $query->select(['id','building']);
                         },
                         'household'=>function($query){
-                            $query->select(['id','unit','floor','number','type']);
+                            $query->select(['id','unit','floor','number','type','code']);
                         }])
                     ->withCount([
                         'householdbuildings','estatebuildings',

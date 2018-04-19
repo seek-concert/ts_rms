@@ -75,6 +75,7 @@
                             <th>位置</th>
                             <th>房屋产权证号</th>
                             <th>征收意见</th>
+                            <th>确认状态</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -92,10 +93,11 @@
                                     </td>
                                     <td>{{$infos->register}}</td>
                                     <td>{{$infos->agree}}</td>
+                                    <td>@if($infos->household->code>=62)已确认@else 待处理@endif</td>
                                     <td>
                                         <a href="{{route('g_buildingrelated',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">建筑关联</a>
-                                        @if($infos->householdbuildings_count == $infos->estatebuildings_count&&$infos->estatebuildings_where==0)
-                                            <a href="{{route('g_buildingconfirm_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">房产确认</a>
+                                        @if($infos->householdbuildings_count&&$infos->householdbuildings_count == $infos->estatebuildings_count&&$infos->estatebuildings_where==0)
+                                            <a href="{{route('g_buildingconfirm_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">@if($infos->household->code>=62)确认详情@else 房产确认@endif</a>
                                         @endif
                                     </td>
                                 </tr>
