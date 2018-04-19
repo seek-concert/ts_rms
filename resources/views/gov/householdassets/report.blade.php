@@ -85,6 +85,7 @@
                             <th>位置</th>
                             <th>房屋产权证号</th>
                             <th>征收意见</th>
+                            <th>确认状态</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -102,6 +103,7 @@
                                     </td>
                                     <td>{{$infos->register}}</td>
                                     <td>{{$infos->agree}}</td>
+                                    <td>@if($infos->householdassetss_count) 待确认@else 已确认@endif</td>
                                     <td>
                                         <a href="{{route('g_householdassets_reportlist',['household_id'=>$infos->household_id,'item'=>$infos->item_id,])}}" class="btn btn-sm">资产详情</a>
                                     </td>

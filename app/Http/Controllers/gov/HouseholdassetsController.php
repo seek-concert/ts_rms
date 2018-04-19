@@ -443,6 +443,8 @@ class HouseholdassetsController extends BaseitemController
         return response()->json($result);
     }
 
+    /* ============================================== 【资产确认】 ========================================== */
+
     /* ========== 被征收户列表 ========== */
     public function report(Request $request){
         $item_id=$this->item_id;
@@ -492,6 +494,11 @@ class HouseholdassetsController extends BaseitemController
                 'itembuilding'=>function($query){
                     $query->select(['id','building']);
                 }])
+                ->withCount([
+                    'householdassetss'=>function($query){
+                        $query->whereNull('number');
+                    }
+                ])
                 ->where($where)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()

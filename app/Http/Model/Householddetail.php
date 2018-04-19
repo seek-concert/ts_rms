@@ -162,6 +162,10 @@ class Householddetail extends Model
     public function householdbuildings(){
         return $this->hasMany('App\Http\Model\Householdbuilding','household_id','household_id');
     }
+    /* ++++++++++ 关联被征户资产 ++++++++++ */
+    public function householdassetss(){
+        return $this->hasMany('App\Http\Model\Householdassets','household_id','household_id');
+    }
 
     /* ++++++++++ 关联评估房屋建筑 ++++++++++ */
     public function estatebuildings(){
