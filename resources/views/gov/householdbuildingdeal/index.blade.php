@@ -75,6 +75,7 @@
                             <th>位置</th>
                             <th>房屋产权证号</th>
                             <th>征收意见</th>
+                            <th>建筑合法认定及处理</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -90,6 +91,7 @@
                                         {{$infos->household->number?$infos->household->number.'号':''}}</td>
                                     <td>{{$infos->register}}</td>
                                     <td>{{$infos->agree}}</td>
+                                    <td> @if($infos->householdbuildings_count!=0) 需要处理@else 处理已完成@endif</td>
                                     <td>
                                         <a href="{{route('g_householdbuildingdeal_infos',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">建筑详情</a>
                                     </td>

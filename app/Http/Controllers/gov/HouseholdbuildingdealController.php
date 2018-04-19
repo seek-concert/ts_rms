@@ -32,37 +32,43 @@ class HouseholdbuildingdealController extends BaseitemController
         $infos['item'] = $item;
         /* ********** 查询条件 ********** */
         $where=[];
+        $total_where=[];
         $where[] = ['item_id',$item_id];
+        $total_where[] = ['item_household_detail.item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','land_id','building_id','household_id','status','register','agree'];
         /* ********** 地块 ********** */
         $land_id=$request->input('land_id');
         if(is_numeric($land_id)){
             $where[] = ['land_id',$land_id];
+            $total_where[] = ['item_household_detail.land_id',$land_id];
             $infos['land_id'] = $land_id;
         }
         /* ********** 楼栋 ********** */
         $building_id=$request->input('building_id');
         if(is_numeric($building_id)){
             $where[] = ['building_id',$building_id];
+            $total_where[] = ['item_household_detail.building_id',$building_id];
             $infos['building_id'] = $building_id;
         }
         /* ********** 排序 ********** */
         $ordername=$request->input('ordername');
-        $ordername=$ordername?$ordername:'status';
+        $ordername=$ordername?'item_household_detail.'.$ordername:'item_household_detail.'.'id';
         $infos['ordername']=$ordername;
 
         $orderby=$request->input('orderby');
         $orderby=$orderby?$orderby:'desc';
         $infos['orderby']=$orderby;
         /* ********** 每页条数 ********** */
-        $per_page=15;
+        $per_page=20;
         $page=$request->input('page',1);
+
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
             $total=Householddetail::sharedLock()
-                ->where($where)
+                ->leftJoin('item_household_building as hb', 'hb.household_id', '=', 'item_household_detail.household_id')
+                ->where('hb.code','<>','90')
+                ->where($total_where)
                 ->count();
             $households=Householddetail::with([
                     'itemland'=>function($query){
@@ -71,8 +77,12 @@ class HouseholdbuildingdealController extends BaseitemController
                     'itembuilding'=>function($query){
                         $query->select(['id','building']);
                     }])
-                ->where($where)
-                ->select($select)
+                ->withCount(['householdbuildings'=>function($query){
+                    $query->whereIn('code',['91','93']);
+                }])
+                ->leftJoin('item_household_building as hb', 'hb.household_id', '=', 'item_household_detail.household_id')
+                ->where('hb.code','<>','90')
+                ->where($total_where)
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
                 ->offset($per_page*($page-1))
