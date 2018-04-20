@@ -124,6 +124,7 @@ class ItemdraftreportController extends BaseitemController
                 $itemdraftreport->fill($request->all());
                 $itemdraftreport->addOther($request);
                 $itemdraftreport->item_id=$item_id;
+                $itemdraftreport->code=0;
                 $itemdraftreport->draft_id=DB::table('item_draft')->where('item_id', $item_id)->first()->id;
                 $itemdraftreport->save();
                 if (blank($itemdraftreport)) {
@@ -139,7 +140,7 @@ class ItemdraftreportController extends BaseitemController
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
                 $sdata = null;
-                $edata = $itemdraftreport;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }
