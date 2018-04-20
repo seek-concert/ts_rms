@@ -4167,12 +4167,12 @@ class ItemprocessController extends BaseitemController
                 // 面积争议
                 $area_dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
-                    ->whereNotIn('area_dispute',[0,3])
+                    ->whereNotIn('area_dispute',[0,3,5])
                     ->count();
                 // 合法性认定
                 $legal_num=Householdbuilding::sharedLock()
                     ->where('item_id',$this->item_id)
-                    ->whereIn('code',['91'])
+                    ->whereIn('code',['91','93'])
                     ->distinct()
                     ->count('household_id');
                 // 资产确认
@@ -4253,7 +4253,7 @@ class ItemprocessController extends BaseitemController
                 // 面积争议
                 $area_dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
-                    ->whereNotIn('area_dispute',[0,3])
+                    ->whereNotIn('area_dispute',[0,3,5])
                     ->count();
                 if($area_dispute_num){
                     throw new \Exception('存在面积争议未解决',404404);
@@ -4261,7 +4261,7 @@ class ItemprocessController extends BaseitemController
                 // 合法性认定
                 $legal_num=Householdbuilding::sharedLock()
                     ->where('item_id',$this->item_id)
-                    ->whereIn('code',['91'])
+                    ->whereIn('code',['91','93'])
                     ->count();
                 if($legal_num){
                     throw new \Exception('存在合法性认定未解决',404404);
@@ -4398,7 +4398,7 @@ class ItemprocessController extends BaseitemController
                 // 面积争议
                 $area_dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
-                    ->whereNotIn('area_dispute',[0,3])
+                    ->whereNotIn('area_dispute',[0,3,5])
                     ->count();
                 if($area_dispute_num){
                     throw new \Exception('存在面积争议未解决',404404);
@@ -4406,7 +4406,7 @@ class ItemprocessController extends BaseitemController
                 // 合法性认定
                 $legal_num=Householdbuilding::sharedLock()
                     ->where('item_id',$this->item_id)
-                    ->whereIn('code',['91'])
+                    ->whereIn('code',['91','93'])
                     ->count();
                 if($legal_num){
                     throw new \Exception('存在合法性认定未解决',404404);
@@ -4514,7 +4514,7 @@ class ItemprocessController extends BaseitemController
                 // 面积争议
                 $area_dispute_num=Householddetail::sharedLock()
                     ->where('item_id',$this->item_id)
-                    ->whereNotIn('area_dispute',[0,3])
+                    ->whereNotIn('area_dispute',[0,3,5])
                     ->count();
                 if($area_dispute_num){
                     throw new \Exception('存在面积争议未解决',404404);
@@ -4522,7 +4522,7 @@ class ItemprocessController extends BaseitemController
                 // 合法性认定
                 $legal_num=Householdbuilding::sharedLock()
                     ->where('item_id',$this->item_id)
-                    ->whereIn('code',['91'])
+                    ->whereIn('code',['91','93'])
                     ->count();
                 if($legal_num){
                     throw new \Exception('存在合法性认定未解决',404404);
