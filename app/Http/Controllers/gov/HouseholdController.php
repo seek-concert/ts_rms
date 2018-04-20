@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class HouseholdController extends BaseitemController
 {
@@ -140,7 +141,9 @@ class HouseholdController extends BaseitemController
             $rules = [
                 'land_id' => 'required',
                 'type' => 'required',
-                'username' => 'required|unique:item_household',
+                'username' => ['required',Rule::unique('item_household')->where(function ($query) use($item_id){
+                    $query->where('item_id',$item_id);
+                })],
                 'password' => 'required'
             ];
             $messages = [
@@ -266,7 +269,9 @@ class HouseholdController extends BaseitemController
             /* ********** 表单验证 ********** */
             $rules = [
                 'type' => 'required',
-                'username' => 'required|unique:item_household,username,'.$id.',id',
+                'username' => ['required',Rule::unique('item_household')->where(function ($query) use($item_id,$id){
+                    $query->where('item_id',$item_id)->where('id','<>',$id);
+                })],
                 'password' => 'required'
             ];
             $messages = [
