@@ -495,7 +495,7 @@ class HouseholddetailController extends BaseitemController
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '修改失败';
                 $sdata = null;
-                $edata = $householddetail;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }
