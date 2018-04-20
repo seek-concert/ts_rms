@@ -5,6 +5,8 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\gov;
+use App\Http\Model\Assets;
+use App\Http\Model\Estate;
 use App\Http\Model\Household;
 use App\Http\Model\Householdassets;
 use App\Http\Model\Householddetail;
@@ -716,13 +718,13 @@ class HouseholdassetsController extends BaseitemController
                         throw new \Exception('修改失败',404404);
                     }
                     /* ++++++++++ 锁定数据 ++++++++++ */
-                    $estate =  Estate::lockForUpdate()->where('item_id',$item_id)->where('household_id',$household_id)->first();
-                    if(blank($estate)){
+                    $assets =  Assets::lockForUpdate()->where('item_id',$item_id)->where('household_id',$household_id)->first();
+                    if(blank($assets)){
                         throw new \Exception('暂无相关数据',404404);
                     }
-                    $estate->code = 130;
-                    $estate->save();
-                    if(blank($estate)){
+                    $assets->code = 130;
+                    $assets->save();
+                    if(blank($assets)){
                         throw new \Exception('修改失败',404404);
                     }
                 }

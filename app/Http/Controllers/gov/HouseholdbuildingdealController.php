@@ -258,6 +258,22 @@ class HouseholdbuildingdealController extends BaseitemController
                     throw new \Exception('数据异常,认定失败！',404404);
                 }
 
+                /*------------ 检测是否所有的都已经确权 ------------*/
+                $household_code = $this->household_status($household_id);
+                if($household_code){
+                    /*----------- 修改状态 ------------*/
+                    /* ++++++++++ 锁定数据 ++++++++++ */
+                    $household =  Household::lockForUpdate()->find($household_id);
+                    if(blank($household)){
+                        throw new \Exception('暂无相关数据',404404);
+                    }
+                    $household->code = 63;
+                    $household->save();
+                    if(blank($household)){
+                        throw new \Exception('处理失败',404404);
+                    }
+                }
+
                 $code = 'success';
                 $msg = '认定成功';
                 $sdata = $householdbuilding;
@@ -268,7 +284,7 @@ class HouseholdbuildingdealController extends BaseitemController
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '认定失败';
                 $sdata = null;
-                $edata = $householdbuilding;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }
@@ -367,20 +383,35 @@ class HouseholdbuildingdealController extends BaseitemController
                 $householdbuildingdeal->code = 0;
                 $householdbuildingdeal->save();
                 if (blank($householdbuildingdeal)) {
-                    throw new \Exception('添加失败', 404404);
+                    throw new \Exception('处理失败！', 404404);
+                }
+                /*------------ 检测是否所有的都已经确权 ------------*/
+                $household_code = $this->household_status($household_id);
+                if($household_code){
+                    /*----------- 修改状态 ------------*/
+                    /* ++++++++++ 锁定数据 ++++++++++ */
+                    $household =  Household::lockForUpdate()->find($household_id);
+                    if(blank($household)){
+                        throw new \Exception('暂无相关数据',404404);
+                    }
+                    $household->code = 63;
+                    $household->save();
+                    if(blank($household)){
+                        throw new \Exception('处理失败',404404);
+                    }
                 }
 
                 $code = 'success';
-                $msg = '添加成功';
+                $msg = '处理成功';
                 $sdata = $householdbuildingdeal;
                 $edata = null;
                 $url = route('g_householdbuildingdeal_infos',['item'=>$item_id,'household_id'=>$household_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
-                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '处理失败！';
                 $sdata = null;
-                $edata = $householdbuildingdeal;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }

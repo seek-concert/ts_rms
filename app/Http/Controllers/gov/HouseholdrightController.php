@@ -206,7 +206,7 @@ class HouseholdrightController extends BaseitemController
                 $householddetail->dispute = 2;
                 $householddetail->save();
                 if (blank($householddetail)) {
-                    throw new \Exception('添加失败', 404404);
+                    throw new \Exception('处理失败，被征户数据异常!', 404404);
                 }
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $householdright = $model;
@@ -215,20 +215,35 @@ class HouseholdrightController extends BaseitemController
                 $householdright->item_id = $item_id;
                 $householdright->save();
                 if (blank($householdright)) {
-                    throw new \Exception('添加失败', 404404);
+                    throw new \Exception('处理失败，数据异常!', 404404);
+                }
+                /*------------ 检测是否所有的都已经确权 ------------*/
+                $household_code = $this->household_status($household_id);
+                if($household_code){
+                    /*----------- 修改状态 ------------*/
+                    /* ++++++++++ 锁定数据 ++++++++++ */
+                    $household =  Household::lockForUpdate()->find($household_id);
+                    if(blank($household)){
+                        throw new \Exception('暂无相关数据',404404);
+                    }
+                    $household->code = 63;
+                    $household->save();
+                    if(blank($household)){
+                        throw new \Exception('处理失败',404404);
+                    }
                 }
 
                 $code = 'success';
-                $msg = '添加成功';
+                $msg = '处理成功';
                 $sdata = $householdright;
                 $edata = null;
                 $url = route('g_householdright',['item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
-                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '处理失败！';
                 $sdata = null;
-                $edata = $householdright;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }
