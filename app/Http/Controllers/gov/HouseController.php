@@ -615,115 +615,105 @@ class HouseController extends BaseauthController
         house_import_demo_xls($new_data,'导入数据格式');
     }
 
-//    /* ========== 导入房源 ========== */
-//    public function import_house(Request $request){
-//        $files=$request->file();
-//        $key=array_keys($files);
-//        $file = $files[$key[0]];
-//        if($file->isValid()){
-//            $file_name = date('YmdHis').rand(100,999);
-//            $info = $file->move( './storage/'.date('ymd'),$file_name.'.xls');
-//            if($info){
-//                $datas = './storage/'.date('ymd').'/'.$file_name.'.xls';
-//                $excel_datas = import_house($datas);
-//                $add_data_array = $excel_datas['add_datas'];
-//               /*-----去掉已存在的房源-------*/
-//                foreach ($add_data_array as $k=>$v){
-//                    $house_rs = House::where('company_id',$v['company_id'])
-//                        ->where('community_id',$v['community_id'])
-//                        ->where('building',$v['building'])
-//                        ->where('unit',$v['unit'])
-//                        ->where('floor',$v['floor'])
-//                        ->where('number',$v['number'])
-//                        ->count();
-//                    if($house_rs){
-//                        unset($add_data_array[$k]);
-//                    }
-//                }
-//
-//                foreach ($add_data_array as $key=>$val){
-//                    /* ++++++++++ 新增 ++++++++++ */
-//                    DB::beginTransaction();
-//                    try {
-//                        $model = new House();
-//                        /* ++++++++++ 批量赋值 ++++++++++ */
-//                        /*----- 房源添加 -----*/
-//                        $house = $model;
-//                        $house->save($val);
-//                        $house->addOther($request);
-//                        $house->code='150';
-//                        $house_rs = $house->save();
-//                        if (blank($house_rs)) {
-//                            throw  new \Exception('添加失败', 404404);
-//                        }
-//                        /*----- 房源-评估单价添加 -----*/
-//                        $houseprice_model = new Houseprice();
-//                        $houseprice = $houseprice_model;
-//                        $houseprice->fill($request->input('houseprice'));
-//                        $houseprice->house_id = $house->id;
-//                        $houseprice->save();
-//                        if (blank($houseprice)) {
-//                            throw  new \Exception('添加失败', 404404);
-//                        }
-//
-//                        if($request->input('is_buy')==1) {
-//                            /*----- 房源-购置管理费单价添加 -----*/
-//                            $housemanageprice = $housemanageprice_model;
-//                            $housemanageprice->fill($request->input());
-//                            $housemanageprice->house_id = $house->id;
-//                            $housemanageprice->save();
-//                            if (blank($housemanageprice)) {
-//                                throw  new \Exception('添加失败', 404404);
-//                            }
-//                        }
-//
-//                        $code = 'success';
-//                        $msg = '添加成功';
-//                        $sdata = $house;
-//                        $edata = null;
-//                        $url = route('g_house');
+    /* ========== 导入房源 ========== */
+    public function import_house(Request $request){
+        $files=$request->file();
+        $key=array_keys($files);
+        $file = $files[$key[0]];
+        if($file->isValid()){
+            $file_name = date('YmdHis').rand(100,999);
+            $info = $file->move( './storage/'.date('ymd'),$file_name.'.xls');
+            if($info){
+                $datas = './storage/'.date('ymd').'/'.$file_name.'.xls';
+                $excel_datas = import_house($datas);
+                $add_data_array = $excel_datas['add_datas'];
+               /*-----去掉已存在的房源-------*/
+                foreach ($add_data_array as $k=>$v){
+                    $house_rs = House::where('company_id',$v['company_id'])
+                        ->where('community_id',$v['community_id'])
+                        ->where('building',$v['building'])
+                        ->where('unit',$v['unit'])
+                        ->where('floor',$v['floor'])
+                        ->where('number',$v['number'])
+                        ->count();
+                    if($house_rs){
+                        unset($add_data_array[$k]);
+                    }
+                }
+                foreach ($add_data_array as $key=>$val){
+                    /* ++++++++++ 新增 ++++++++++ */
+                    DB::beginTransaction();
+                    try {
+                        /* ++++++++++ 批量赋值 ++++++++++ */
+                        /*----- 房源添加 -----*/
+                        $model = new House();
+                        $house = $model;
+                        $house->fill($val);
+                        $house->code = $val['code'];
+                        $house->save();
+                        if (blank($house)) {
+                            throw  new \Exception('添加失败', 404404);
+                        }
+                        /*----- 房源-评估单价添加 -----*/
+                        $houseprice_model = new Houseprice();
+                        $houseprice = $houseprice_model;
+                        $houseprice->start_at = $val['start_at_a'];
+                        $houseprice->end_at = $val['end_at_a'];
+                        $houseprice->market = $val['market'];
+                        $houseprice->price = $val['price'];
+                        $houseprice->house_id = $house->id;
+                        $houseprice->save();
+                        if (blank($houseprice)) {
+                            throw  new \Exception('添加失败', 404404);
+                        }
+
+                        if($val['is_buy']==1) {
+                            /*----- 房源-购置管理费单价添加 -----*/
+                            $housemanageprice_model = new Housemanageprice();
+                            $housemanageprice = $housemanageprice_model;
+                            $housemanageprice->start_at = $val['start_at'];
+                            $housemanageprice->end_at = $val['end_at'];
+                            $housemanageprice->manage_price = $val['manage_price'];
+                            $housemanageprice->house_id = $house->id;
+                            $housemanageprice->save();
+                            if (blank($housemanageprice)) {
+                                throw  new \Exception('添加失败', 404404);
+                            }
+                        }
+
+                        $code = 'success';
+                        $msg = '添加成功';
+                        $sdata['data_count'] = $excel_datas['data_count'];
+                        $sdata['success_count'] = $excel_datas['success_count'];
+                        $sdata['error_count'] = $excel_datas['error_count'];
+                        $sdata['unique_count'] = $excel_datas['success_count']-count($add_data_array);
+                        $sdata['add_count'] = count($add_data_array);
+                        $edata = null;
+                        $view = 'gov.house.houseimport_result';
 //                        DB::commit();
-//                    } catch (\Exception $exception) {
-//                        $code = 'error';
-//                        $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
-//                        $sdata = null;
-//                        $edata = $house;
-//                        $url = null;
-//                        DB::rollBack();
-//                    }
-//
-//
-//                }die;
-//
-//                /* ++++++++++ 结果 ++++++++++ */
-//                $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-//                return response()->json($result);
-//
-////                $rs = model('Houses')->saveAll($add_data_array);
-////                if($rs){
-////                    return view($this->theme.'/house/excel_info',[
-////                        'data_count'=>$excel_datas['data_count'],
-////                        'success_count'=>$excel_datas['success_count'],
-////                        'error_count'=>$excel_datas['error_count'],
-////                        'error_data_file'=>$datas,
-////                        'unique_count'=>$excel_datas['success_count']-count($add_data_array),
-////                        'add_count'=>count($add_data_array)
-////                    ]);
-////                }else{
-////                    return view($this->theme.'/house/excel_info',[
-////                        'data_count'=>$excel_datas['data_count'],
-////                        'success_count'=>$excel_datas['success_count'],
-////                        'error_count'=>$excel_datas['error_count'],
-////                        'error_data_file'=>$datas,
-////                        'unique_count'=>$excel_datas['success_count']-count($add_data_array),
-////                        'add_count'=>count($add_data_array)
-////                    ]);
-////                }
-//
-//            }else{
-//                $result=['code'=>'error','message'=>'文件导入失败','sdata'=>null,'edata'=>null,'url'=>null];
-//                return response()->json($result);
-//            }
-//        }
-//    }
+                    } catch (\Exception $exception) {
+                        $code = 'error';
+                        $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                        $sdata = null;
+                        $edata = null;
+                        $view = 'gov.error';
+                        DB::rollBack();
+                    }
+
+
+                }
+                /* ++++++++++ 结果 ++++++++++ */
+                $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>null];
+                return view($view)->with($result);
+
+            }else{
+                $result=['code'=>'error','message'=>'文件导入失败！','sdata'=>null,'edata'=>null,'url'=>null];
+                return view('gov.error')->with($result);
+            }
+        }else{
+            $result=['code'=>'error','message'=>'文件获取失败！','sdata'=>null,'edata'=>null,'url'=>null];
+            return view('gov.error')->with($result);
+        }
+    }
+
 }

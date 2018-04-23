@@ -257,3 +257,5 @@ Route::any('/house_export','HouseController@house_export')->name('g_house_export
 Route::any('/house_import_demo','HouseController@house_import_demo')->name('g_house_import_demo');
 /*---------- 房源导入 ----------*/
 Route::any('/import_house','HouseController@import_house')->name('g_import_house');
+/*---------- 房源导入结果 ----------*/
+Route::any('/houseimport_result','HouseController@houseimport_result')->name('g_houseimport_result');

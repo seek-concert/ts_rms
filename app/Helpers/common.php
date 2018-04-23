@@ -631,7 +631,7 @@ function import_house($file)
             $data[$j]['is_public'] = 0;
         }
         /*交付时间*/
-        if (trim($data[$j]['is_buy']) == '是') {
+        if (trim($data[$j]['is_buy']) == '1') {
             if (isset($data[$j]['delive_at'])) {
                 $delive_at = strtotime(trim($data[$j]['delive_at']));
                 if ($delive_at == false) {
@@ -640,7 +640,7 @@ function import_house($file)
                 }
             }
         } else {
-            $data[$j]['delive_at'] = '';
+            $data[$j]['delive_at'] = null;
         }
 
         $data[$j]['picture'] = [];
