@@ -310,6 +310,7 @@
                     </label>
                     <div class="col-sm-9">
                         <ul class="ace-thumbnails clearfix img-content viewer">
+                            @if(isset($sdata['household']->sign))
                             <li>
                                 <div>
                                     <img width="120" height="120" src="{{$sdata['household']->sign}}" alt="加载失败">
@@ -322,6 +323,7 @@
                                     </div>
                                 </div>
                             </li>
+                            @endif
                         </ul>
                     </div>
                 </div>

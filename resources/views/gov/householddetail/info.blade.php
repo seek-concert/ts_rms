@@ -341,6 +341,7 @@
                                     <div class="profile-info-value">
                                     <span class="editable editable-click">
                                          <ul class="ace-thumbnails clearfix img-content viewer">
+                                             @if(isset($edata['household_detail']->sign))
                                                  <li>
                                                 <div>
                                                     <img width="120" height="120" src="{{$edata['household_detail']->sign}}" alt="加载失败">
@@ -351,6 +352,7 @@
                                                     </div>
                                                 </div>
                                             </li>
+                                            @endif
                                         </ul>
                                     </span>
                                     </div>
