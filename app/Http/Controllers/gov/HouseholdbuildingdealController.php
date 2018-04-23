@@ -66,10 +66,11 @@ class HouseholdbuildingdealController extends BaseitemController
         DB::beginTransaction();
         try{
             $total=Householddetail::sharedLock()
+                ->select(DB::raw('count(distinct(item_household_detail.id)) as household_num'))
                 ->leftJoin('item_household_building as hb', 'hb.household_id', '=', 'item_household_detail.household_id')
                 ->where('hb.code','<>','90')
                 ->where($total_where)
-                ->count();
+                ->first();
             $households=Householddetail::with([
                     'itemland'=>function($query){
                         $query->select(['id','address']);
@@ -84,11 +85,12 @@ class HouseholdbuildingdealController extends BaseitemController
                 ->where('hb.code','<>','90')
                 ->where($total_where)
                 ->orderBy($ordername,$orderby)
+                ->distinct()
                 ->sharedLock()
                 ->offset($per_page*($page-1))
                 ->limit($per_page)
                 ->get();
-            $households=new LengthAwarePaginator($households,$total,$per_page,$page);
+            $households=new LengthAwarePaginator($households,$total->household_num,$per_page,$page);
             $households->withPath(route('g_householdbuildingdeal',['item'=>$item_id]));
 
 

@@ -15,7 +15,7 @@
         {{csrf_field()}}
         <input type="hidden" name="item" value="{{$edata['item_id']}}">
         <input type="hidden" name="detail_id" value="{{$edata['detail_id']}}">
-
+        <span class="red">温馨提示：只有征收管理端和评估机构端两边被征收户信息和房屋建筑信息一样（当页面不会出现<i class="red fa fa-times fa-2x"></i>时）才能进行房产确认！</span>
         <div class="tabbable">
             <ul class="nav nav-tabs">
                 <li class="active">
@@ -140,22 +140,22 @@
                                                         <div class="profile-info-row">
                                                             <div class="profile-info-name"> {{$edata['detail_filecates'][$names]}}： </div>
                                                             <div class="profile-info-value">
-                                                                        <span class="editable editable-click">
-                                                                             <ul class="ace-thumbnails clearfix img-content viewer">
-                                                                                 @foreach($picturepic as $pics)
-                                                                                     <li>
-                                                                                        <div>
-                                                                                            <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
-                                                                                            <div class="text">
-                                                                                                <div class="inner">
-                                                                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                                                </div>
-                                                                                            </div>
+                                                                <span class="editable editable-click">
+                                                                     <ul class="ace-thumbnails clearfix img-content viewer">
+                                                                         @foreach($picturepic as $pics)
+                                                                             <li>
+                                                                                <div>
+                                                                                    <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
+                                                                                    <div class="text">
+                                                                                        <div class="inner">
+                                                                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
                                                                                         </div>
-                                                                                     </li>
-                                                                                 @endforeach
-                                                                            </ul>
-                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                             </li>
+                                                                         @endforeach
+                                                                    </ul>
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     @endforeach
@@ -164,20 +164,20 @@
                                                 <div class="profile-info-row">
                                                     <div class="profile-info-name"> 被征收人签名： </div>
                                                     <div class="profile-info-value">
-                                                                <span class="editable editable-click">
-                                                                     <ul class="ace-thumbnails clearfix img-content viewer">
-                                                                             <li>
-                                                                            <div>
-                                                                                <img width="120" height="120" src="{{$edata['household_detail']->sign}}" alt="加载失败">
-                                                                                <div class="text">
-                                                                                    <div class="inner">
-                                                                                        <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                                    </div>
-                                                                                </div>
+                                                        <span class="editable editable-click">
+                                                             <ul class="ace-thumbnails clearfix img-content viewer">
+                                                                     <li>
+                                                                    <div>
+                                                                        <img width="120" height="120" src="{{$edata['household_detail']->sign}}" alt="加载失败">
+                                                                        <div class="text">
+                                                                            <div class="inner">
+                                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
                                                                             </div>
-                                                                        </li>
-                                                                    </ul>
-                                                                </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </span>
                                                     </div>
                                                 </div>
 
@@ -317,22 +317,22 @@
                                                         <div class="profile-info-row">
                                                             <div class="profile-info-name"> {{$edata['com_filecates'][$names]}}： </div>
                                                             <div class="profile-info-value">
-                                                                    <span class="editable editable-click">
-                                                                         <ul class="ace-thumbnails clearfix img-content viewer">
-                                                                             @foreach($picturepic as $pics)
-                                                                                 <li>
-                                                                                    <div>
-                                                                                        <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
-                                                                                        <div class="text">
-                                                                                            <div class="inner">
-                                                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                                            </div>
+                                                                <span class="editable editable-click">
+                                                                     <ul class="ace-thumbnails clearfix img-content viewer">
+                                                                         @foreach($picturepic as $pics)
+                                                                             <li>
+                                                                                <div>
+                                                                                    <img width="120" height="120" src="{!! $pics !!}" alt="加载失败">
+                                                                                    <div class="text">
+                                                                                        <div class="inner">
+                                                                                            <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
                                                                                         </div>
                                                                                     </div>
-                                                                                 </li>
-                                                                             @endforeach
-                                                                        </ul>
-                                                                    </span>
+                                                                                </div>
+                                                                             </li>
+                                                                         @endforeach
+                                                                    </ul>
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     @endforeach
@@ -341,20 +341,20 @@
                                                 <div class="profile-info-row">
                                                     <div class="profile-info-name"> 被征收人签名： </div>
                                                     <div class="profile-info-value">
-                                                            <span class="editable editable-click">
-                                                                 <ul class="ace-thumbnails clearfix img-content viewer">
-                                                                         <li>
-                                                                        <div>
-                                                                            <img width="120" height="120" src="{{$edata['estate']->sign}}" alt="加载失败">
-                                                                            <div class="text">
-                                                                                <div class="inner">
-                                                                                    <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
-                                                                                </div>
+                                                        <span class="editable editable-click">
+                                                             <ul class="ace-thumbnails clearfix img-content viewer">
+                                                                     <li>
+                                                                    <div>
+                                                                        <img width="120" height="120" src="{{$edata['estate']->sign}}" alt="加载失败">
+                                                                        <div class="text">
+                                                                            <div class="inner">
+                                                                                <a onclick="preview(this)"><i class="fa fa-search-plus"></i></a>
                                                                             </div>
                                                                         </div>
-                                                                    </li>
-                                                                </ul>
-                                                            </span>
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                        </span>
                                                     </div>
                                                 </div>
 
@@ -697,9 +697,6 @@
                                                             <div class="profile-info-name"> 户型名称： </div>
                                                             <div class="profile-info-value">
                                                                 <span class="editable editable-click">{{$edata['estatebuildings'][$k]->landlayout->name}}</span>
-                                                                @if($infos->landlayout->name != $edata['estatebuildings'][$k]->landlayout->name)
-                                                                    <i class="red fa fa-times fa-2x"></i>
-                                                                @endif
                                                             </div>
                                                         </div>
 

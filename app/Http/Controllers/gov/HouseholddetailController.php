@@ -963,7 +963,7 @@ class HouseholddetailController extends BaseitemController
 
 
             $code = 'success';
-            $msg = '关联成功';
+            $msg = '确权成功';
             $sdata = $household;
             $edata = null;
             $url = route('g_buildingconfirm_info',['id'=>$request->input('detail_id'),'item'=>$item_id,'household_id'=>$id]);

@@ -25,7 +25,7 @@ class HouseholdbuildingareaController extends BaseitemController
     }
 
 
-    /* ++++++++++ 违建被征户首页 ++++++++++ */
+    /* ++++++++++ 首页 ++++++++++ */
     public function index(Request $request){
         $item_id=$this->item_id;
         $item=$this->item;
@@ -34,7 +34,6 @@ class HouseholdbuildingareaController extends BaseitemController
         $where=[];
         $where[] = ['item_id',$item_id];
         $infos['item_id'] = $item_id;
-        $select=['id','item_id','land_id','building_id','household_id','area_dispute','register','agree'];
         /* ********** 地块 ********** */
         $land_id=$request->input('land_id');
         if(is_numeric($land_id)){
@@ -58,12 +57,16 @@ class HouseholdbuildingareaController extends BaseitemController
         /* ********** 每页条数 ********** */
         $per_page=15;
         $page=$request->input('page',1);
+        $infos['wait_num']=Householddetail::sharedLock()
+            ->where($where)
+            ->whereNotin('area_dispute',['0','3','5'])
+            ->count();
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
             $total=Householddetail::sharedLock()
                 ->where($where)
-                ->whereIn('area_dispute',[2,3])
+                ->where('area_dispute','<>','0')
                 ->count();
             $households=Householddetail::with([
                 'itemland'=>function($query){
@@ -72,9 +75,11 @@ class HouseholdbuildingareaController extends BaseitemController
                 'itembuilding'=>function($query){
                     $query->select(['id','building']);
                 }])
+                ->withCount(['householdbuildings'=>function($query){
+                    $query->whereNull('layout_id');
+                }])
                 ->where($where)
-                ->whereIn('area_dispute',[2,3])
-                ->select($select)
+                ->where('area_dispute','<>','0')
                 ->orderBy($ordername,$orderby)
                 ->sharedLock()
                 ->offset($per_page*($page-1))
@@ -181,7 +186,7 @@ class HouseholdbuildingareaController extends BaseitemController
             /* ++++++++++ 新增 ++++++++++ */
             DB::beginTransaction();
             try {
-                /* ++++++++++ 修改产权争议状态 ++++++++++ */
+                /* ++++++++++ 修改面积争议状态 ++++++++++ */
                 $householddetail = Householddetail::lockforupdate()->find($id);
                 if (blank($householddetail)) {
                     throw new \Exception('数据异常', 404404);
@@ -189,7 +194,7 @@ class HouseholdbuildingareaController extends BaseitemController
                 $householddetail->area_dispute = 5;
                 $householddetail->save();
                 if (blank($householddetail)) {
-                    throw new \Exception('添加失败', 404404);
+                    throw new \Exception('处理失败！', 404404);
                 }
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $householdbuildingarea = $model;
@@ -199,20 +204,36 @@ class HouseholdbuildingareaController extends BaseitemController
                 $householdbuildingarea->code = 0;
                 $householdbuildingarea->save();
                 if (blank($householdbuildingarea)) {
-                    throw new \Exception('添加失败', 404404);
+                    throw new \Exception('处理失败！', 404404);
+                }
+
+                /*------------ 检测是否所有的都已经确权 ------------*/
+                $household_code = $this->household_status($household_id);
+                if($household_code){
+                    /*----------- 修改状态 ------------*/
+                    /* ++++++++++ 锁定数据 ++++++++++ */
+                    $household =  Household::lockForUpdate()->find($household_id);
+                    if(blank($household)){
+                        throw new \Exception('暂无相关数据',404404);
+                    }
+                    $household->code = 63;
+                    $household->save();
+                    if(blank($household)){
+                        throw new \Exception('处理失败',404404);
+                    }
                 }
 
                 $code = 'success';
-                $msg = '添加成功';
+                $msg = '处理成功';
                 $sdata = $householdbuildingarea;
                 $edata = null;
                 $url = route('g_householdbuildingarea',['item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
                 $code = 'error';
-                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '处理失败！';
                 $sdata = null;
-                $edata = $householdbuildingarea;
+                $edata = null;
                 $url = null;
                 DB::rollBack();
             }

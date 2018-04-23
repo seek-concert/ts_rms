@@ -66,6 +66,7 @@
                 </div>
 
                 <div id="buildingconfirm" class="tab-pane fade active in">
+                    <span class="red">温馨提示:请先关联建筑,然后再进行房产确认！</span>
                     <table class="table table-hover table-bordered">
                         <thead>
                         <tr>
@@ -95,7 +96,7 @@
                                     <td>{{$infos->agree}}</td>
                                     <td>@if($infos->household->code>=62)已确认@else 待处理@endif</td>
                                     <td>
-                                        <a href="{{route('g_buildingrelated',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">建筑关联</a>
+                                        <a href="{{route('g_buildingrelated',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">@if($infos->householdbuildings_count&&$infos->householdbuildings_count == $infos->estatebuildings_count&&$infos->estatebuildings_where==0) 关联详情@else 建筑关联@endif</a>
                                         @if($infos->householdbuildings_count&&$infos->householdbuildings_count == $infos->estatebuildings_count&&$infos->estatebuildings_where==0)
                                             <a href="{{route('g_buildingconfirm_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">@if($infos->household->code>=62)确认详情@else 房产确认@endif</a>
                                         @endif

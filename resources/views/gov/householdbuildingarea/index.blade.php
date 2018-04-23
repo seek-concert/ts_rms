@@ -79,6 +79,7 @@
                             <th>位置</th>
                             <th>房屋产权证号</th>
                             <th>征收意见</th>
+                            <th>处理状态</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -97,11 +98,27 @@
                                     </td>
                                     <td>{{$infos->register}}</td>
                                     <td>{{$infos->agree}}</td>
+                                    <td>@if($infos->getOriginal('area_dispute')==1)
+                                             等待测绘,请完善测绘报告
+                                        @endif</td>
+                                        @if($infos->getOriginal('area_dispute')==2)
+                                            已测绘,等待被征收户确认
+                                        @endif
+                                        @if($infos->getOriginal('area_dispute')==3)
+                                            面积明确，处理已完成
+                                        @endif
+                                        @if($infos->getOriginal('area_dispute')==4)
+                                            争议待处理
+                                        @endif
+                                        @if($infos->getOriginal('area_dispute')==5)
+                                            争议处理已完成
+                                        @endif
                                     <td>
                                         @if($infos->getOriginal('area_dispute')==4)
                                             <a href="{{route('g_householdbuildingarea_add',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">处理争议</a>
-                                        @else
-                                            <a href="{{route('g_householdbuildingarea_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">解决详情</a>
+                                        @endif
+                                        @if($infos->getOriginal('area_dispute')==5)
+                                            <a href="{{route('g_householdbuildingarea_info',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">处理详情</a>
                                         @endif
                                     </td>
                                 </tr>
@@ -111,7 +128,7 @@
                     </table>
                     <div class="row">
                         <div class="col-xs-6">
-                            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $sdata->total() }} @else 0 @endif 条数据</div>
+                            <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 @if($code=='success') {{ $sdata->total() }} @else 0 @endif 条数据，等待处理 <span class="red">{{$edata['wait_num']}}</span> 条</div>
                         </div>
                         <div class="col-xs-6">
                             <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
