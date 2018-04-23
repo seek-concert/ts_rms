@@ -9,8 +9,7 @@
         "barryvdh/laravel-debugbar": "^3.1",
         "fideloper/proxy": "~3.3",
         "laravel/framework": "v5.5.*",
-        "laravel/tinker": "~1.0",
-        "predis/predis": "^1.1"
+        "laravel/tinker": "~1.0"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
