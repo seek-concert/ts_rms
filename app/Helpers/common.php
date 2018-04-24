@@ -755,3 +755,254 @@ function import_house($file)
         ];
         return $new_data;
 }
+/**-----导出失败数据------
+ * @param  string $file excel文件路径
+ * @return array        excel文件内容数组
+ * error_data     失败数据数组
+ * */
+function export_errordata($file)
+{
+    // 判断文件是什么格式
+    $type = pathinfo($file);
+    $type = strtolower($type["extension"]);
+    $type = $type === 'csv' ? $type : 'Excel5';
+    ini_set('max_execution_time', '0');
+    // 判断使用哪种格式
+    $objReader = PHPExcel_IOFactory::createReader($type);
+    $objPHPExcel = $objReader->load($file, $encode = 'utf-8');
+    $sheet = $objPHPExcel->getSheet(0);
+    // 取得总行数
+    $highestRow = $sheet->getHighestRow();
+    // 取得总列数
+    $highestColumn = $sheet->getHighestColumn();
+    //循环读取excel文件
+    $data = array();
+    /* 获取表头数组*/
+    $title = [
+        'company_id' => '管理机构',
+        'community_id' => '房源社区',
+        'layout_id' => '户型',
+        'building' => '楼栋',
+        'unit' => '单元',
+        'floor' => '楼层',
+        'number' => '房号',
+        'area' => '面积(㎡)',
+        'total_floor' => '总楼层',
+        'delive_at' => '交付时间(年月日)',
+        'lift' => '是否有电梯',
+        'is_real' => '是否现房',
+        'is_buy' => '是否购置房',
+        'is_transit' => '是否可作临时周转',
+        'is_public' => '是否可项目共享',
+        'start_at_a' => '房源评估开始时间(年月日)',
+        'end_at_a' => '房源评估结束时间(年月日)',
+        'market' => '评估市场价',
+        'price' => '安置优惠价',
+        'manage_price' => '购置管理费单价(元/月)',
+        'start_at' => '购置管理费单价开始时间(年)',
+        'end_at' => '购置管理费单价结束时间(年)'
+    ];
+
+    /*数据拼装*/
+    $keys_array = [];
+    //从第二行开始读取数据
+    for ($j = 2; $j <= $highestRow; $j++) {
+        //从A列读取数据
+        for ($k = 'A'; $k <= $highestColumn; $k++) {
+            // 读取单元格
+            $vals = $objPHPExcel->getActiveSheet()->getCell($k . '1')->getValue();
+            $keys = array_search($vals, $title);
+            $cell = $objPHPExcel->getActiveSheet()->getCell("$k$j")->getValue();
+            // 转字符型
+            if ($cell instanceof PHPExcel_RichText) {
+                $cell = $cell->__toString();
+            }
+            $data[$j][$keys] = $cell;
+        }
+        // 数据验证及查询
+        /*管理机构*/
+        if (isset($data[$j]['company_id'])) {
+            $company_id = \App\Http\Model\Housecompany::where('name', trim($data[$j]['company_id']))->value('id');
+            if (!$company_id) {
+                $keys_array[] = $j;
+                continue;
+            }
+        } else {
+            $keys_array[] = $j;
+            continue;
+        }
+
+        /*管理社区*/
+        if (isset($data[$j]['community_id'])) {
+            $community_id = \App\Http\Model\Housecommunity::where('name', trim($data[$j]['community_id']))->value('id');
+            if (empty($community_id)) {
+                $keys_array[] = $j;
+                continue;
+            }
+        } else {
+            $keys_array[] = $j;
+            continue;
+        }
+        /*户型ID 户型图ID*/
+        if (isset($data[$j]['layout_id'])) {
+            $layout_id = \App\Http\Model\Layout::where('name', trim($data[$j]['layout_id']))->value('id');
+            $layout_img_id = \App\Http\Model\Houselayoutimg::where('layout_id', $layout_id)
+                ->where('community_id', $community_id)
+                ->value('id');
+            if (empty($layout_id) || empty($layout_img_id)) {
+                $keys_array[] = $j;
+                continue;
+            }
+        } else {
+            $keys_array[] = $j;
+            continue;
+        }
+
+        /*单元*/
+      if (isset($data[$j]['unit']) && !is_numeric($data[$j]['unit'])) {
+            $keys_array[] = $j;
+            continue;
+        }
+        /*楼层*/
+      if (isset($data[$j]['floor']) && !is_numeric($data[$j]['floor'])) {
+            $keys_array[] = $j;
+            continue;
+        }
+
+
+        /*面积*/
+        if (preg_match('/^[0-9]+(.[0-9]{1,2})?$/', trim($data[$j]['area'])) == false) {
+            $keys_array[] = $j;
+            continue;
+        }
+
+        /*总楼层*/
+        if (empty($data[$j]['total_floor'])) {
+            $keys_array[] = $j;
+            continue;
+        }
+
+
+        /*是否有电梯*/
+        if (isset($data[$j]['lift']) && !in_array(trim($data[$j]['lift']), ['是', '否'])) {
+            $keys_array[] = $j;
+            continue;
+        }
+        /*是否现房*/
+        if (isset($data[$j]['is_real']) && !in_array(trim($data[$j]['is_real']), ['现房', '期房'])) {
+            $keys_array[] = $j;
+            continue;
+        }
+        /*是否购置房*/
+        if (isset($data[$j]['is_buy']) && !in_array(trim($data[$j]['is_buy']), ['是', '否'])) {
+            $keys_array[] = $j;
+            continue;
+        }
+        /*是否可过渡*/
+        if (isset($data[$j]['is_transit']) && !in_array(trim($data[$j]['is_transit']), ['是', '否'])) {
+            $keys_array[] = $j;
+            continue;
+        }
+
+        /*是否项目专用*/
+        if (isset($data[$j]['is_public']) && !in_array(trim($data[$j]['is_public']), ['是', '否'])) {
+            $keys_array[] = $j;
+            continue;
+        }
+
+        /*交付时间*/
+        if (trim($data[$j]['is_buy']) == '1') {
+            if (isset($data[$j]['delive_at'])) {
+                $delive_at = strtotime(trim($data[$j]['delive_at']));
+                if ($delive_at == false) {
+                    $keys_array[] = $j;
+                    continue;
+                }
+            }
+        }
+
+        /*========评估单价=============*/
+        /*开始时间*/
+        if (isset($data[$j]['start_at_a'])) {
+            $start_at_a = strtotime(trim($data[$j]['start_at_a']));
+            if ($start_at_a == false) {
+                $keys_array[] = $j;
+                continue;
+            }
+        } else {
+            $keys_array[] = $j;
+            continue;
+        }
+        /*结束时间*/
+        if (isset($data[$j]['end_at_a'])) {
+            $end_at_a = strtotime(trim($data[$j]['end_at_a']));
+            if ($end_at_a == false) {
+                $keys_array[] = $j;
+                continue;
+            }
+        } else {
+            $keys_array[] = $j;
+            continue;
+        }
+        /*市场评估价*/
+        if (empty($data[$j]['market'])) {
+            $keys_array[] = $j;
+            continue;
+        } elseif (preg_match('/^[0-9]+(.[0-9]{1,2})?$/', trim($data[$j]['market'])) == false) {
+            $keys_array[] = $j;
+            continue;
+        }
+        /*安置优惠价*/
+        if (empty($data[$j]['price'])) {
+            $keys_array[] = $j;
+            continue;
+        } elseif (preg_match('/^[0-9]+(.[0-9]{1,2})?$/', trim($data[$j]['price'])) == false) {
+            $keys_array[] = $j;
+            continue;
+        }
+
+        /*========购置管理费单价=============*/
+        if (trim($data[$j]['is_buy']) == '是') {
+            /*开始时间*/
+            if (isset($data[$j]['start_at_a'])) {
+                $start_at_a = strtotime(trim($data[$j]['start_at_a']));
+                if ($start_at_a == false) {
+                    $keys_array[] = $j;
+                    continue;
+                }
+            } else {
+                $keys_array[] = $j;
+                continue;
+            }
+            /*结束时间*/
+            if (isset($data[$j]['end_at_a'])) {
+                $end_at_a = strtotime(trim($data[$j]['end_at_a']));
+                if ($end_at_a == false) {
+                    $keys_array[] = $j;
+                    continue;
+                }
+            } else {
+                $keys_array[] = $j;
+                continue;
+            }
+            /*公摊费单价*/
+            if (empty($data[$j]['manage_price'])) {
+                $keys_array[] = $j;
+                continue;
+            } elseif (preg_match('/^[0-9]+(.[0-9]{1,2})?$/', trim($data[$j]['manage_price'])) == false) {
+                $keys_array[] = $j;
+                continue;
+            }
+        }
+    }
+    /*
+     * error_data     失败数据
+    */
+    $error_data = [];
+    // 获取错误数组
+    foreach ($keys_array as $k=>$v){
+        $error_data[] = $data[$v];
+    }
+
+    return $error_data;
+}

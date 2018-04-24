@@ -688,6 +688,7 @@ class HouseController extends BaseauthController
                         $sdata['error_count'] = $excel_datas['error_count'];
                         $sdata['unique_count'] = $excel_datas['success_count']-count($add_data_array);
                         $sdata['add_count'] = count($add_data_array);
+                        $sdata['file_url'] = $datas;
                         $edata = null;
                         $view = 'gov.house.houseimport_result';
                         DB::commit();
@@ -714,6 +715,40 @@ class HouseController extends BaseauthController
             $result=['code'=>'error','message'=>'文件获取失败！','sdata'=>null,'edata'=>null,'url'=>null];
             return view('gov.error')->with($result);
         }
+    }
+
+    /* ========== 导出失败房源数据 ========== */
+    public function export_errordata(Request $request){
+        $file_url = $request->input('file_url');
+        $error_datas = export_errordata($file_url);
+
+        $new_title = [];
+        $new_title[0][0] = '管理机构';
+        $new_title[0][1] = '房源社区';
+        $new_title[0][2] = '户型';
+        $new_title[0][3] = '楼栋';
+        $new_title[0][4] = '单元';
+        $new_title[0][5] = '楼层';
+        $new_title[0][6] = '房号';
+        $new_title[0][7] = '面积(㎡)';
+        $new_title[0][8] = '总楼层';
+        $new_title[0][9] = '交付时间(年月日)';
+        $new_title[0][10] = '是否有电梯';
+        $new_title[0][11] = '是否现房';
+        $new_title[0][12] = '是否购置房';
+        $new_title[0][13] = '是否可作临时周转';
+        $new_title[0][14] = '是否可项目共享';
+        $new_title[0][15] = '房源评估开始时间(年月日)';
+        $new_title[0][16] = '房源评估结束时间(年月日)';
+        $new_title[0][17] = '评估市场价';
+        $new_title[0][18] = '安置优惠价';
+        $new_title[0][19] = '购置管理费单价(元/月)';
+        $new_title[0][20] = '购置管理费单价开始时间(年)';
+        $new_title[0][21] = '购置管理费单价结束时间(年)';
+        $new_data = array_merge($new_title,$error_datas);
+          exec('rm -rf '.$file_url);
+           unlink($file_url);
+        house_import_demo_xls($new_data,'错误格式数据'.date('Ymd'));
     }
 
 }
