@@ -690,7 +690,7 @@ class HouseController extends BaseauthController
                         $sdata['add_count'] = count($add_data_array);
                         $edata = null;
                         $view = 'gov.house.houseimport_result';
-//                        DB::commit();
+                        DB::commit();
                     } catch (\Exception $exception) {
                         $code = 'error';
                         $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '添加失败';
