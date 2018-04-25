@@ -49,7 +49,7 @@ class HouseholdController extends BaseitemController
         $infos['company_id'] = $company_id;
         $where[] = ['company_id',$company_id];
         /* ********** 每页条数 ********** */
-        $per_page=1;
+        $per_page=15;
         $page=$request->input('page',1);
         /* ********** 查询 ********** */
         DB::beginTransaction();
