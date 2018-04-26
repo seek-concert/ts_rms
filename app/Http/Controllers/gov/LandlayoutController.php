@@ -8,6 +8,7 @@ namespace App\Http\Controllers\gov;
 use App\Http\Model\Estatebuilding;
 use App\Http\Model\Household;
 use App\Http\Model\Householdbuilding;
+use App\Http\Model\Householddetail;
 use App\Http\Model\Itemland;
 use App\Http\Model\Itemuser;
 use App\Http\Model\Landlayout;
@@ -498,6 +499,14 @@ class LandlayoutController extends BaseitemController
                 ->offset($per_page*($page-1))
                 ->limit($per_page)
                 ->get();
+            if(!blank($landlayouts)){
+                foreach ($landlayouts as $v){
+                    if($v['picture']){
+                        Householdbuilding::where('layout_id',$v['id'])->update(['real_outer'=>$v['area'],'updated_at'=>date('Y-m-d H:i:s')]);
+                    }
+                }
+
+            }
             $landlayouts=new LengthAwarePaginator($landlayouts,$total,$per_page,$page);
             $landlayouts->withPath(route('g_landlayout_reportlist',['item'=>$item_id]));
 
@@ -619,11 +628,16 @@ class LandlayoutController extends BaseitemController
                 if(blank($landlayout)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
-                /* ++++++++++ 处理其他数据 ++++++++++ */
+                /* ++++++++++ 提交测绘报告 ++++++++++ */
                 $landlayout->fill($request->all());
                 $landlayout->editOther($request);
                 $landlayout->save();
                 if(blank($landlayout)){
+                    throw new \Exception('提交失败',404404);
+                }
+                /* ++++++++++ 提交测绘报告修改实际面积 ++++++++++ */
+                $Householdbuilding = Householdbuilding::where('layout_id',$request->input('id'))->update(['real_outer'=>$request->input('area'),'updated_at'=>date('Y-m-d H:i:s')]);
+                if(blank($Householdbuilding)){
                     throw new \Exception('提交失败',404404);
                 }
                 $code='success';
