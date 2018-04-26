@@ -944,19 +944,9 @@ class HouseholddetailController extends BaseitemController
                 if(blank($household)){
                     throw new \Exception('暂无相关数据',404404);
                 }
-                $household->code = 63;
+                $household->code = 62;
                 $household->save();
                 if(blank($household)){
-                    throw new \Exception('修改失败',404404);
-                }
-                /* ++++++++++ 锁定数据 ++++++++++ */
-                $estate =  Estate::lockForUpdate()->where('item_id',$item_id)->where('household_id',$id)->first();
-                if(blank($estate)){
-                    throw new \Exception('暂无相关数据',404404);
-                }
-                $estate->code = 130;
-                $estate->save();
-                if(blank($estate)){
                     throw new \Exception('修改失败',404404);
                 }
             }

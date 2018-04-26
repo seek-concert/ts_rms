@@ -226,7 +226,7 @@ class HouseholdrightController extends BaseitemController
                     if(blank($household)){
                         throw new \Exception('暂无相关数据',404404);
                     }
-                    $household->code = 63;
+                    $household->code = 62;
                     $household->save();
                     if(blank($household)){
                         throw new \Exception('处理失败',404404);

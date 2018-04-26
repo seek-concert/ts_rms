@@ -712,19 +712,9 @@ class HouseholdassetsController extends BaseitemController
                     if(blank($household)){
                         throw new \Exception('暂无相关数据',404404);
                     }
-                    $household->code = 63;
+                    $household->code = 62;
                     $household->save();
                     if(blank($household)){
-                        throw new \Exception('修改失败',404404);
-                    }
-                    /* ++++++++++ 锁定数据 ++++++++++ */
-                    $assets =  Assets::lockForUpdate()->where('item_id',$item_id)->where('household_id',$household_id)->first();
-                    if(blank($assets)){
-                        throw new \Exception('暂无相关数据',404404);
-                    }
-                    $assets->code = 130;
-                    $assets->save();
-                    if(blank($assets)){
                         throw new \Exception('修改失败',404404);
                     }
                 }
