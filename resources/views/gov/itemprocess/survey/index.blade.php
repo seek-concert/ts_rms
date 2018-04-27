@@ -28,6 +28,7 @@
                         <th>资产确认</th>
                         <th>房产确认</th>
                         <th>公共附属物确定</th>
+                        <th>还未确权被征收户户数</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -38,6 +39,7 @@
                         <td>{{$sdata['assets_num']}}</td>
                         <td>{{$sdata['building_num']}}</td>
                         <td>{{$sdata['public_num']}}</td>
+                        <td>{{$sdata['household_nums']}}</td>
                     </tr>
                     </tbody>
                 </table>

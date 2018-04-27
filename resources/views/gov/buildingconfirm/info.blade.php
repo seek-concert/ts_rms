@@ -215,7 +215,7 @@
                                                     <div class="profile-info-name"> 产权争议： </div>
                                                     <div class="profile-info-value">
                                                         <span class="editable editable-click">{{$edata['estate']->dispute}}</span>
-                                                        @if($edata['estate']->dispute != $edata['household_detail']->dispute)
+                                                        @if($edata['estate']->getOriginal('dispute')==1 || $edata['household_detail']->getOriginal('dispute')==1)
                                                             <i class="red fa fa-times fa-2x"></i>
                                                         @endif
                                                     </div>
@@ -225,7 +225,7 @@
                                                     <div class="profile-info-name"> 面积争议： </div>
                                                     <div class="profile-info-value">
                                                         <span class="editable editable-click">{{$edata['estate']->area_dispute}}</span>
-                                                        @if($edata['estate']->area_dispute != $edata['household_detail']->area_dispute)
+                                                        @if($edata['estate']->getOriginal('area_dispute')==1|| in_array($edata['household_detail']->getOriginal('area_dispute'),[1,2,4]))
                                                             <i class="red fa fa-times fa-2x"></i>
                                                         @endif
                                                     </div>
@@ -266,9 +266,6 @@
                                                     <div class="profile-info-name"> 阳台面积： </div>
                                                     <div class="profile-info-value">
                                                         <span class="editable editable-click">{{$edata['estate']->balcony}}</span>
-                                                        @if($edata['estate']->balcony != $edata['household_detail']->balcony)
-                                                            <i class="red fa fa-times fa-2x"></i>
-                                                        @endif
                                                     </div>
                                                 </div>
 
@@ -573,12 +570,8 @@
                                                             <div class="profile-info-name"> 状态： </div>
                                                             <div class="profile-info-value">
                                                                 <span class="editable editable-click">{{$edata['estatebuildings'][$k]->state->name}}</span>
-                                                                @if($infos->state->name != $edata['estatebuildings'][$k]->state->name)
-                                                                    @if($edata['estatebuildings'][$k]->code == 90 or ($infos->code == 93 || $infos->code == 95))
-
-                                                                    @else
-                                                                        <i class="red fa fa-times fa-2x"></i>
-                                                                    @endif
+                                                                @if($edata['estatebuildings'][$k]->code == 91 || in_array($infos->code,[91,93]))
+                                                                    <i class="red fa fa-times fa-2x"></i>
                                                                 @endif
                                                             </div>
                                                         </div>
@@ -587,9 +580,6 @@
                                                             <div class="profile-info-name"> 名称： </div>
                                                             <div class="profile-info-value">
                                                                 <span class="editable editable-click">{{$edata['estatebuildings'][$k]->name}}</span>
-                                                                @if($infos->name != $edata['estatebuildings'][$k]->name)
-                                                                    <i class="red fa fa-times fa-2x"></i>
-                                                                @endif
                                                             </div>
                                                         </div>
 
@@ -647,9 +637,6 @@
                                                             <div class="profile-info-name"> 登记建筑面积： </div>
                                                             <div class="profile-info-value">
                                                                 <span class="editable editable-click">{{$edata['estatebuildings'][$k]->reg_outer}}</span>
-                                                                @if($infos->reg_outer != $edata['estatebuildings'][$k]->reg_outer)
-                                                                    <i class="red fa fa-times fa-2x"></i>
-                                                                @endif
                                                             </div>
                                                         </div>
 
@@ -657,9 +644,6 @@
                                                             <div class="profile-info-name"> 阳台面积： </div>
                                                             <div class="profile-info-value">
                                                                 <span class="editable editable-click">{{$edata['estatebuildings'][$k]->balcony}}</span>
-                                                                @if($infos->balcony != $edata['estatebuildings'][$k]->balcony)
-                                                                    <i class="red fa fa-times fa-2x"></i>
-                                                                @endif
                                                             </div>
                                                         </div>
 
