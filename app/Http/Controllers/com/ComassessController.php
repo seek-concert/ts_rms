@@ -641,6 +641,7 @@ class ComassessController extends BaseitemController
             return view($view)->with($result);
         }else{
             /*================================【开始评估】=======================================*/
+
             /*------------------- 数据填写验证 -----------------------*/
             $valuer_id = $request->input('valuer_id');
             $picture = $request->input('picture');
@@ -689,6 +690,14 @@ class ComassessController extends BaseitemController
                 /*============================【房产数据】==============================*/
                 /*------------------- 房产汇总信息 -----------------------*/
                 $estates = Estate::where('item_id',$item_id)->where('household_id',$household_id)->where('company_id',$company_id)->first();
+                if($estates->code==133){
+                    $result=['code'=>'error','message'=>'数据已审核,不能被修改!','sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
+                }
+                if($estates->code==136){
+                    $result=['code'=>'error','message'=>'数据已确认,不能被修改!','sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
+                }
                 /*------------------- 评估价格修改数据 -----------------------*/
                 $realputer = Estatebuilding::select(['id','real_outer','real_use'])->whereIn('id',$household_ids)->get();
                 /*****************【数据验证】**********************/
@@ -734,6 +743,14 @@ class ComassessController extends BaseitemController
                 /*============================【资产数据】==============================*/
                 /*------------------- 资产汇总信息 -----------------------*/
                 $assets = Assets::where('item_id',$item_id)->where('household_id',$household_id)->where('company_id',$company_id)->first();
+                if($assets->code==133){
+                    $result=['code'=>'error','message'=>'数据已审核,不能被修改!','sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
+                }
+                if($assets->code==136){
+                    $result=['code'=>'error','message'=>'数据已确认,不能被修改!','sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
+                }
                 /*------------------- 评估师评估记录数据 -----------------------*/
                 $valuer_datas = [];
                 foreach ($valuer_id as $key=>$val){
