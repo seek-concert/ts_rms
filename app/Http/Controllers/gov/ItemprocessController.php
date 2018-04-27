@@ -4183,6 +4183,12 @@ class ItemprocessController extends BaseitemController
                     })
                     ->distinct()
                     ->count('household_id');
+                // 房产确认
+                $building_num = Householddetail::sharedLock()
+                    ->leftJoin('item_household as ih','ih.id','=','item_household_detail.household_id')
+                    ->where('ih.item_id',$this->item_id)
+                    ->where('ih.code','<','62')
+                    ->count();
                 // 公共附属物确认
                 $public_num=Itempublic::sharedLock()
                     ->where('item_id',$this->item_id)
@@ -4190,6 +4196,17 @@ class ItemprocessController extends BaseitemController
                         $query->whereNull ('number')->orWhere('number',0);
                     })
                     ->count();
+                // 被征收户是否确权完毕
+                $household_nums = Householddetail::sharedLock()
+                    ->leftJoin('item_household as ih','ih.id','=','item_household_detail.household_id')
+                    ->where('ih.item_id',$this->item_id)
+                    ->where('ih.code','62')
+                    ->count();
+                if($household_nums!=0){
+                    $affirmation = '62';
+                }else{
+                    $affirmation = '63';
+                }
 
                 $code='success';
                 $msg='查询成功';
@@ -4206,6 +4223,8 @@ class ItemprocessController extends BaseitemController
                     'legal_num'=>$legal_num,
                     'assets_num'=>$assets_num,
                     'public_num'=>$public_num,
+                    'building_num'=>$building_num,
+                    'affirmation'=>$affirmation,
                 ];
                 $edata=null;
                 $url=null;
@@ -4275,6 +4294,15 @@ class ItemprocessController extends BaseitemController
                     ->count();
                 if($assets_num){
                     throw new \Exception('存在资产确认未解决',404404);
+                }
+                // 房产确认
+                $building_num = Householddetail::sharedLock()
+                    ->leftJoin('item_household as ih','ih.id','=','item_household_detail.household_id')
+                    ->where('ih.item_id',$this->item_id)
+                    ->where('ih.code','<','62')
+                    ->count();
+                if($building_num){
+                    throw new \Exception('存在房产确认未解决',404404);
                 }
                 // 公共附属物确认
                 $public_num=Itempublic::sharedLock()
@@ -4421,6 +4449,15 @@ class ItemprocessController extends BaseitemController
                 if($assets_num){
                     throw new \Exception('存在资产确认未解决',404404);
                 }
+                // 房产确认
+                $building_num = Householddetail::sharedLock()
+                    ->leftJoin('item_household as ih','ih.id','=','item_household_detail.household_id')
+                    ->where('ih.item_id',$this->item_id)
+                    ->where('ih.code','<','62')
+                    ->count();
+                if($building_num){
+                    throw new \Exception('存在房产确认未解决',404404);
+                }
                 // 公共附属物确认
                 $public_num=Itempublic::sharedLock()
                     ->where('item_id',$this->item_id)
@@ -4536,6 +4573,15 @@ class ItemprocessController extends BaseitemController
                     ->count();
                 if($assets_num){
                     throw new \Exception('存在资产确认未解决',404404);
+                }
+                // 房产确认
+                $building_num = Householddetail::sharedLock()
+                    ->leftJoin('item_household as ih','ih.id','=','item_household_detail.household_id')
+                    ->where('ih.item_id',$this->item_id)
+                    ->where('ih.code','<','62')
+                    ->count();
+                if($building_num){
+                    throw new \Exception('存在房产确认未解决',404404);
                 }
                 // 公共附属物确认
                 $public_num=Itempublic::sharedLock()

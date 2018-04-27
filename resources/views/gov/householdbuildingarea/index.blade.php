@@ -100,7 +100,7 @@
                                     <td>{{$infos->agree}}</td>
                                     <td>@if($infos->getOriginal('area_dispute')==1)
                                              等待测绘,请完善测绘报告
-                                        @endif</td>
+                                        @endif
                                         @if($infos->getOriginal('area_dispute')==2)
                                             已测绘,等待被征收户确认
                                         @endif
@@ -113,6 +113,7 @@
                                         @if($infos->getOriginal('area_dispute')==5)
                                             争议处理已完成
                                         @endif
+                                    </td>
                                     <td>
                                         @if($infos->getOriginal('area_dispute')==4)
                                             <a href="{{route('g_householdbuildingarea_add',['id'=>$infos->id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">处理争议</a>

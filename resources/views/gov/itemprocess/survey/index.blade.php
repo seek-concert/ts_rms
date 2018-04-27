@@ -26,6 +26,7 @@
                         <th>合法性认定</th>
                         <th>面积争议</th>
                         <th>资产确认</th>
+                        <th>房产确认</th>
                         <th>公共附属物确定</th>
                     </tr>
                     </thead>
@@ -35,15 +36,23 @@
                         <td>{{$sdata['legal_num']}}</td>
                         <td>{{$sdata['area_dispute_num']}}</td>
                         <td>{{$sdata['assets_num']}}</td>
+                        <td>{{$sdata['building_num']}}</td>
                         <td>{{$sdata['public_num']}}</td>
                     </tr>
                     </tbody>
                 </table>
-                @if($sdata['item']->process_id==25 && $sdata['item']->code=='1' && $sdata['dispute_num']==0 && $sdata['legal_num']==0 && $sdata['area_dispute_num']==0 && $sdata['assets_num']==0 && $sdata['public_num']==0)
-                    <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_survey',['item'=>$sdata['item']->id])}}" data-method="post">
-                        <i class="ace-icon fa fa-support bigger-110"></i>
-                        入户调查数据提交审查
-                    </a>
+                @if($sdata['item']->process_id==25 && $sdata['item']->code=='1' && $sdata['dispute_num']==0 && $sdata['legal_num']==0 && $sdata['area_dispute_num']==0 && $sdata['assets_num']==0 && $sdata['public_num']==0 && $sdata['building_num']==0)
+                    @if($sdata['affirmation']==63)
+                        <a class="btn btn-danger" onclick="btnAct(this)" data-url="{{route('g_survey',['item'=>$sdata['item']->id])}}" data-method="post">
+                            <i class="ace-icon fa fa-support bigger-110"></i>
+                            入户调查数据提交审查
+                        </a>
+                    @else
+                        <a class="btn btn-danger red" >
+                            <i class="ace-icon fa fa-support bigger-110"></i>
+                            等待被征收户确权中
+                        </a>
+                    @endif
                 @endif
             </div>
         </div>

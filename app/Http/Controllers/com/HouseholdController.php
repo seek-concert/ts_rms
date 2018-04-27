@@ -75,7 +75,7 @@ class HouseholdController extends BaseitemController
                 ->limit($per_page)
                 ->get();
             $households=new LengthAwarePaginator($households,$total,$per_page,$page);
-            $households->withPath(route('c_household'));
+            $households->withPath(route('c_household',['item'=>$item_id]));
             if(blank($households)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
