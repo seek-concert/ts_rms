@@ -171,7 +171,7 @@ class HouseholdrightController extends BaseitemController
             $holder = $request->input('holder');
             $portion = $request->input('portion');
             if(!$holder||!$portion){
-                $result=['code'=>'error','message'=>'请先完善人员资料!','sdata'=>null,'edata'=>null,'url'=>null];
+                $result=['code'=>'error','message'=>'请先完善家庭人员资料信息!','sdata'=>null,'edata'=>null,'url'=>null];
                 return response()->json($result);
             }
             $member_data = [];
