@@ -178,6 +178,10 @@ class HouseholdrightController extends BaseitemController
             $i=0;
             $num = 0;
             foreach ($holder as $k=>$v){
+                if(!$k){
+                    $result=['code'=>'error','message'=>'请先完善家庭人员资料信息!','sdata'=>null,'edata'=>null,'url'=>null];
+                    return response()->json($result);
+                }
                 $member_data[$i]['id'] = $k;
                 $member_data[$i]['holder'] = $v;
                 $member_data[$i]['portion'] = $portion[$k];
