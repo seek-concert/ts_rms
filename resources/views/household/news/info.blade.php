@@ -131,7 +131,7 @@
 
                     <div class="widget-body">
                         <div class="widget-main">
-                            <textarea id="content"  >{{$sdata['news']->content}}</textarea>
+                           {!! $sdata['news']->content !!}
                         </div>
                     </div>
                 </div>
@@ -155,7 +155,7 @@
 
             <div class="tab-content">
                 <div id="program_content" class="tab-pane active" >
-                        <textarea  id="content1">{{$sdata['program']['itemprogram']->content}}</textarea>
+                       {!!$sdata['program']['itemprogram']->content!!}
                 </div>
 
                 <div id="subject" class="tab-pane" >
@@ -485,7 +485,7 @@
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 内容： </div>
                                     <div class="profile-info-value">
-                                        <textarea  id="content2" >{{$sdata['itemdraft']->content}}</textarea>
+                                      {!!$sdata['itemdraft']->content!!}
                                     </div>
                                 </div>
                             </div>
@@ -509,13 +509,13 @@
     @parent
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script src="{{asset('laydate/laydate.js')}}"></script>
-    <script src="{{asset('ueditor/ueditor.config.js')}}"></script>
-    <script src="{{asset('ueditor/ueditor.all.min.js')}}"></script>
-    <script>
-         UE.getEditor('content', {readonly:true,toolbars:null,wordCount:false});
-         UE.getEditor('content1', {readonly:true,toolbars:null,wordCount:false});
-         UE.getEditor('content2', {readonly:true,toolbars:null,wordCount:false});
-        $('.img-content').viewer();
-    </script>
+    {{--<script src="{{asset('ueditor/ueditor.config.js')}}"></script>--}}
+    {{--<script src="{{asset('ueditor/ueditor.all.min.js')}}"></script>--}}
+    {{--<script>--}}
+         {{--UE.getEditor('content', {readonly:true,toolbars:null,wordCount:false});--}}
+         {{--UE.getEditor('content1', {readonly:true,toolbars:null,wordCount:false});--}}
+         {{--UE.getEditor('content2', {readonly:true,toolbars:null,wordCount:false});--}}
+        {{--$('.img-content').viewer();--}}
+    {{--</script>--}}
 
 @endsection
