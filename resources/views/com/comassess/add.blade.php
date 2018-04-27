@@ -28,7 +28,7 @@
                 <li class="">
                     <a data-toggle="tab" href="#assess" aria-expanded="false">
                         <i class="green ace-icon fa fa-home bigger-120"></i>
-                        开始预评估
+                        @if($sdata['item_program'])开始评估@else 开始预评估@endif
                     </a>
                 </li>
             </ul>

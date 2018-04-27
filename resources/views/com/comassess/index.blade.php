@@ -30,9 +30,9 @@
                             <td>{{$infos->household->type}}</td>
                             <td>
                                 @if($infos->household->estates->code==130)
-                                    <a href="{{route('c_comassess_add',['id'=>$infos->household_id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">开始评估</a>
+                                    <a href="{{route('c_comassess_add',['id'=>$infos->household_id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">@if($edata['item_program'])开始评估@else 开始预评估@endif</a>
                                 @else
-                                    <a href="{{route('c_comassess_info',['id'=>$infos->household_id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">评估详情</a>
+                                    <a href="{{route('c_comassess_info',['id'=>$infos->household_id,'item'=>$infos->item_id,'household_id'=>$infos->household_id])}}" class="btn btn-sm">@if($edata['item_program'])评估详情@else 预评估详情@endif</a>
                                 @endif
                             </td>
                         </tr>

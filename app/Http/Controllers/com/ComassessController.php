@@ -50,6 +50,9 @@ class ComassessController extends BaseitemController
         /* ********** 每页条数 ********** */
         $per_page=15;
         $page=$request->input('page',1);
+
+
+        $infos['item_program'] = Itemprogram::where('item_id',$item_id)->first();
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
@@ -161,6 +164,7 @@ class ComassessController extends BaseitemController
           $data['item'] = $item;
           $data['type'] = $type;
           $data['household_id'] = $household_id;
+          $data['item_program'] = Itemprogram::where('item_id',$item_id)->first();
           $data['household'] = Household::with([
               'itemland'=>function($query){
                   $query->select(['id','address']);
