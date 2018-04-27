@@ -503,6 +503,7 @@ class LandlayoutController extends BaseitemController
                 foreach ($landlayouts as $v){
                     if($v['picture']){
                         Householdbuilding::where('layout_id',$v['id'])->update(['real_outer'=>$v['area'],'updated_at'=>date('Y-m-d H:i:s')]);
+                        Estatebuilding::where('layout_id',$v['id'])->update(['real_outer'=>$v['area'],'updated_at'=>date('Y-m-d H:i:s')]);
                     }
                 }
 
@@ -640,6 +641,11 @@ class LandlayoutController extends BaseitemController
                 if(blank($Householdbuilding)){
                     throw new \Exception('提交失败',404404);
                 }
+                $Estatebuilding = Estatebuilding::where('layout_id',$request->input('id'))->update(['real_outer'=>$request->input('area'),'updated_at'=>date('Y-m-d H:i:s')]);
+                if(blank($Estatebuilding)){
+                    throw new \Exception('提交失败',404404);
+                }
+
                 $code='success';
                 $msg='提交成功';
                 $sdata=$landlayout;

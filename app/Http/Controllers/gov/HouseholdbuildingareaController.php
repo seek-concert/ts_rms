@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\gov;
+use App\Http\Model\Estate;
 use App\Http\Model\Household;
 use App\Http\Model\Householdbuilding;
 use App\Http\Model\Householddetail;
@@ -97,6 +98,7 @@ class HouseholdbuildingareaController extends BaseitemController
             }
            if($household_ids!=[]){
               Householddetail::whereIn('household_id',$household_ids)->update(['area_dispute'=>2,'updated_at'=>date('Y-m-d H:i:s')]);
+              Estate::whereIn('household_id',$household_ids)->update(['area_dispute'=>2,'updated_at'=>date('Y-m-d H:i:s')]);
            }
        }
 
