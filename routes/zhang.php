@@ -181,6 +181,7 @@ Route::any('/householdassets_del','HouseholdassetsController@del')->name('g_hous
 Route::any('/householdright','HouseholdrightController@index')->name('g_householdright');
 Route::any('/householdright_add','HouseholdrightController@add')->name('g_householdright_add');
 Route::get('/householdright_info','HouseholdrightController@info')->name('g_householdright_info');
+Route::any('/householdright_edit','HouseholdrightController@edit')->name('g_householdright_edit');
 /*---------- 项目-被征户-违建处理 ----------*/
 Route::any('/householdbuildingdeal','HouseholdbuildingdealController@index')->name('g_householdbuildingdeal');
 Route::any('/householdbuildingdeal_status','HouseholdbuildingdealController@status')->name('g_householdbuildingdeal_status');
