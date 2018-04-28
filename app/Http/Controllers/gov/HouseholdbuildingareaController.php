@@ -75,7 +75,7 @@ class HouseholdbuildingareaController extends BaseitemController
                 }
             ])
             ->where('item_id',$item_id)
-            ->where('area_dispute','1')
+            ->whereIn('area_dispute',[1,2])
             ->get();
 
         if(!blank($householddetail)){
