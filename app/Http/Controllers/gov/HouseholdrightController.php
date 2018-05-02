@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\gov;
+use App\Http\Model\Estate;
 use App\Http\Model\Household;
 use App\Http\Model\Householddetail;
 use App\Http\Model\Householdmember;
@@ -216,6 +217,7 @@ class HouseholdrightController extends BaseitemController
                 if (blank($householddetail)) {
                     throw new \Exception('处理失败，被征户数据异常!', 404404);
                 }
+                Estate::where('household_id',$household_id)->update(['dispute'=>2,'updated_at'=>date('Y-m-d H:i:s')]);
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $householdright = $model;
                 $householdright->fill($request->input());
@@ -248,6 +250,7 @@ class HouseholdrightController extends BaseitemController
                 $url = route('g_householdright',['item'=>$item_id]);
                 DB::commit();
             } catch (\Exception $exception) {
+                dd($exception);
                 $code = 'error';
                 $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '处理失败！';
                 $sdata = null;

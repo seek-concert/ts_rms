@@ -77,7 +77,7 @@ class Estate extends Model
     /* ++++++++++ 获取产权争议状态 ++++++++++ */
     public function getDisputeAttribute($key=null)
     {
-        $array=[0=>'无争议',1=>'存在争议'];
+        $array=[0=>'无争议',1=>'存在争议',2=>'产权明确'];
         if(is_numeric($key)){
             return $array[$key];
         }else{
