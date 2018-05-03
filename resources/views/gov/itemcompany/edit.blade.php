@@ -91,6 +91,8 @@
                         <form action="{{route('g_householddetail',['item'=>$sdata['item_id']])}}" role="form" method="get" class="form-inline" id="form-search-household">
                             {{csrf_field()}}
                             <input type="hidden" name="page" value="1" id="current-page">
+                            <input type="hidden" name="company_household" value="1">
+                            <input type="hidden" name="types" value="{{$sdata['itemcompany']->getOriginal('type')}}">
                             @if($sdata['itemcompany']->getOriginal('type'))
                             <input type="hidden" name="has_assets" value="{{$sdata['itemcompany']->getOriginal('type')}}">
                             @endif

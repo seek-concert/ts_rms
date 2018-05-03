@@ -18,6 +18,7 @@
             <thead>
             <tr>
                 <th style="text-align: center">请勾选</th>
+                <th>评估机构</th>
                 <th>名称</th>
                 <th>地块</th>
                 <th>楼栋</th>
@@ -34,6 +35,7 @@
                 @foreach($sdata as $infos)
                     <tr>
                         <td style="text-align: center"><input type="radio" name="id" value="{{$infos->id}}"></td>
+                        <td>{{$infos->company->name}}</td>
                         <td>{{$infos->name}}</td>
                         <td>{{$infos->itemland->address}}</td>
                         <td>{{$infos->itembuilding->building}}</td>

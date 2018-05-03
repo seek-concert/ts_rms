@@ -284,7 +284,7 @@ class ComassessController extends BaseitemController
           $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
           return view($view)->with($result);
       }else{
-          /*================================【开始评估】=======================================*/
+          /*================================【开始预评估】=======================================*/
         /*------------------- 数据填写验证 -----------------------*/
         $valuer_id = $request->input('valuer_id');
         $picture = $request->input('picture');
