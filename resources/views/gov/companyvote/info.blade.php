@@ -95,6 +95,7 @@
                             <th></th>
                             <th>地块</th>
                             <th>地址</th>
+                            <th>用户名</th>
                             <th>投票时间</th>
                         </tr>
                         </thead>
@@ -105,6 +106,7 @@
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$vote->household->itemland->address}}</td>
                                 <td>{{$vote->household->itembuilding->building}}栋{{$vote->household->unit}}单元{{$vote->household->floor}}楼{{$vote->household->number}}号</td>
+                                <td>{{$vote->household->username}}</td>
                                 <td>{{$vote->created_at}}</td>
                             </tr>
                         @endforeach

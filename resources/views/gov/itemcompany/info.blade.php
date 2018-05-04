@@ -80,6 +80,7 @@
                         <th>序号</th>
                         <th>地址</th>
                         <th>房号</th>
+                        <th>用户名</th>
                         <th>资产</th>
                     </tr>
                     </thead>
@@ -88,7 +89,8 @@
                         <tr>
                             <td>{{$loop->iteration}}</td>
                             <td>{{$info->household->itemland->address}}</td>
-                            <td>{{$info->household->itembuilding->building}}栋{{$info->household->unit}}单元{{$info->household->floor}}楼{{$info->household->number}}号</td>
+                            <td>{{$info->household->itembuilding->building?$info->household->itembuilding->building.'栋':''}}{{$info->household->unit?$info->household->unit.'单元':''}}{{$info->household->floor?$info->household->floor.'楼':''}}{{$info->household->number?$info->household->number.'号':''}}</td>
+                            <td>{{$info->household->username}}</td>
                             <td>{{$info->household->householddetail->has_assets}}</td>
                         </tr>
                     @endforeach

@@ -10,7 +10,9 @@
             <i class="ace-icon fa fa-arrow-left bigger-110"></i>
             返回
         </a>
-
+        <a class="btn" href="{{route('g_householdright_edit',['id'=>$edata['id'],'item'=>$edata['item_id'],'household_id'=>$edata['household_id'],'right_id'=>$sdata->id])}}">
+            修改产权争议
+        </a>
     </p>
 
 

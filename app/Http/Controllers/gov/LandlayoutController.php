@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\gov;
+use App\Http\Model\Estate;
 use App\Http\Model\Estatebuilding;
 use App\Http\Model\Household;
 use App\Http\Model\Householdbuilding;
@@ -503,6 +504,7 @@ class LandlayoutController extends BaseitemController
                 foreach ($landlayouts as $v){
                     if($v['picture']){
                         Householdbuilding::where('layout_id',$v['id'])->update(['real_outer'=>$v['area'],'updated_at'=>date('Y-m-d H:i:s')]);
+                        Estatebuilding::where('layout_id',$v['id'])->update(['real_outer'=>$v['area'],'updated_at'=>date('Y-m-d H:i:s')]);
                     }
                 }
 
@@ -640,19 +642,64 @@ class LandlayoutController extends BaseitemController
                 if(blank($Householdbuilding)){
                     throw new \Exception('提交失败',404404);
                 }
+                $Estatebuilding = Estatebuilding::where('layout_id',$request->input('id'))->update(['real_outer'=>$request->input('area'),'updated_at'=>date('Y-m-d H:i:s')]);
+                if(blank($Estatebuilding)){
+                    throw new \Exception('提交失败',404404);
+                }
+
+                /*============== 检测测绘状态【更改被征收户详细信息的面积争议状态】 ================*/
+                $item_household_ids = Householdbuilding::sharedLock()->distinct()->where('layout_id',$request->input('id'))->pluck('household_id');
+                $householddetail =  Householddetail::with([
+                    'householdbuildings'=>function($query){
+                        $query->with(['landlayout'=>function($querys){
+                            $querys->whereNotnull('picture');
+                        }]);
+                    }])
+                    ->withCount(['householdbuildings',
+                        'householdbuildings as householdbuildings_layout'=>function($query){
+                            $query->whereNotnull('layout_id');
+                        }
+                    ])
+                    ->whereIn('household_id',$item_household_ids->toArray())
+                    ->where('area_dispute',1)
+                    ->get();
+
+                if(filled($householddetail)){
+                    $household_ids = [];
+                    foreach($householddetail as $k=>$v){
+                        if($v['householdbuildings_count']==$v['householdbuildings_layout']){
+                            $num = 0;
+                            foreach($v['householdbuildings'] as $key=>$val){
+                                if(!is_null($val->landlayout->id)){
+                                    if(!in_array($v['household_id'],$household_ids)){
+                                        $num+=1;
+                                    }
+                                }
+                            }
+                            /* 已测绘的建筑户型数量与建筑户型数量比较*/
+                            if($num==$v['householdbuildings_layout']){
+                                $household_ids[] = $v['household_id'];
+                            }
+                        }
+                    }
+                    if($household_ids!=[]){
+                        Householddetail::whereIn('household_id',$household_ids)->update(['area_dispute'=>2,'updated_at'=>date('Y-m-d H:i:s')]);
+                        Estate::whereIn('household_id',$household_ids)->update(['area_dispute'=>2,'updated_at'=>date('Y-m-d H:i:s')]);
+                    }
+                }
+
                 $code='success';
                 $msg='提交成功';
                 $sdata=$landlayout;
                 $edata=null;
                 $url = route('g_landlayout_reportlist',['item'=>$this->item_id]);
 
-
                 DB::commit();
             }catch (\Exception $exception){
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$landlayout;
+                $edata=null;
                 $url=null;
                 DB::rollBack();
             }

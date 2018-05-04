@@ -4224,6 +4224,7 @@ class ItemprocessController extends BaseitemController
                     'assets_num'=>$assets_num,
                     'public_num'=>$public_num,
                     'building_num'=>$building_num,
+                    'household_nums'=>$household_nums,
                     'affirmation'=>$affirmation,
                 ];
                 $edata=null;
@@ -4313,6 +4314,15 @@ class ItemprocessController extends BaseitemController
                     ->count();
                 if($public_num){
                     throw new \Exception('存在公共附属物确认未解决',404404);
+                }
+                // 被征收户是否确权完毕
+                $household_nums = Householddetail::sharedLock()
+                    ->leftJoin('item_household as ih','ih.id','=','item_household_detail.household_id')
+                    ->where('ih.item_id',$this->item_id)
+                    ->where('ih.code','62')
+                    ->count();
+                if($household_nums){
+                    throw new \Exception('存在被征收户未确权',404404);
                 }
 
                 $result=$this->hasNotice();
@@ -4468,6 +4478,15 @@ class ItemprocessController extends BaseitemController
                 if($public_num){
                     throw new \Exception('存在公共附属物确认未解决',404404);
                 }
+                // 被征收户是否确权完毕
+                $household_nums = Householddetail::sharedLock()
+                    ->leftJoin('item_household as ih','ih.id','=','item_household_detail.household_id')
+                    ->where('ih.item_id',$this->item_id)
+                    ->where('ih.code','62')
+                    ->count();
+                if($household_nums){
+                    throw new \Exception('存在被征收户未确权',404404);
+                }
 
                 /* ++++++++++ 检查推送 ++++++++++ */
                 $result=$this->hasNotice();
@@ -4592,6 +4611,15 @@ class ItemprocessController extends BaseitemController
                     ->count();
                 if($public_num){
                     throw new \Exception('存在公共附属物确认未解决',404404);
+                }
+                // 被征收户是否确权完毕
+                $household_nums = Householddetail::sharedLock()
+                    ->leftJoin('item_household as ih','ih.id','=','item_household_detail.household_id')
+                    ->where('ih.item_id',$this->item_id)
+                    ->where('ih.code','62')
+                    ->count();
+                if($household_nums){
+                    throw new \Exception('存在被征收户未确权',404404);
                 }
 
                 /* ++++++++++ 检查推送 ++++++++++ */

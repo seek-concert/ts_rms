@@ -6,6 +6,7 @@
 */
 namespace App\Http\Controllers\gov;
 use App\Http\Model\Buildinguse;
+use App\Http\Model\Companyhousehold;
 use App\Http\Model\Estate;
 use App\Http\Model\Estatebuilding;
 use App\Http\Model\Filecate;
@@ -70,27 +71,91 @@ class HouseholddetailController extends BaseitemController
         /* ********** 每页条数 ********** */
         $per_page=15;
         $page=$request->input('page',1);
+        /* ********** 选定评估机构 查询被征收户时调用【根据company_household是否存在】 ********** */
+        $company_household = $request->input('company_household');
         /* ********** 查询 ********** */
         DB::beginTransaction();
         try{
-            $total=Householddetail::sharedLock()
-                ->where($where)
-                ->count();
-            $households=Householddetail::with([
+            if($company_household){
+                $type = $request->input('types');
+                if($type){
+                    /*======== 资产查询被征收户 =========*/
+                    $household_ids = Companyhousehold::query()->sharedLock()
+                        ->leftJoin('company as c','c.id','=','item_company_household.company_id')
+                        ->where('c.type',1)
+                        ->where('item_company_household.item_id',$item_id)
+                        ->pluck('household_id');
+
+                    $total=Householddetail::sharedLock()
+                        ->whereNotIn('household_id',$household_ids->toArray())
+                        ->where($where)
+                        ->count();
+                    $households=Householddetail::with([
+                        'itemland'=>function($query){
+                            $query->select(['id','address']);
+                        }, 'itembuilding'=>function($query){
+                            $query->select(['id','building']);
+                        }, 'household'=>function($query){
+                            $query->select(['id','unit','floor','number','type','username']);
+                        }])
+                        ->where($where)
+                        ->select($select)
+                        ->orderBy($ordername,$orderby)
+                        ->sharedLock()
+                        ->whereNotIn('household_id',$household_ids->toArray())
+                        ->offset($per_page*($page-1))
+                        ->limit($per_page)
+                        ->get();
+                }else{
+                    /*======== 房产查询被征收户 =========*/
+                    $household_ids = Companyhousehold::query()->sharedLock()
+                        ->leftJoin('company as c','c.id','=','item_company_household.company_id')
+                        ->where('c.type',0)
+                        ->where('item_company_household.item_id',$item_id)
+                        ->pluck('household_id');
+
+                    $total=Householddetail::sharedLock()
+                        ->whereNotIn('household_id',$household_ids->toArray())
+                        ->where($where)
+                        ->count();
+                    $households=Householddetail::with([
+                        'itemland'=>function($query){
+                            $query->select(['id','address']);
+                        }, 'itembuilding'=>function($query){
+                            $query->select(['id','building']);
+                        }, 'household'=>function($query){
+                            $query->select(['id','unit','floor','number','type','username']);
+                        }])
+                        ->where($where)
+                        ->select($select)
+                        ->orderBy($ordername,$orderby)
+                        ->sharedLock()
+                        ->whereNotIn('household_id',$household_ids->toArray())
+                        ->offset($per_page*($page-1))
+                        ->limit($per_page)
+                        ->get();
+                }
+            }else{
+                $total=Householddetail::sharedLock()
+                    ->where($where)
+                    ->count();
+                $households=Householddetail::with([
                     'itemland'=>function($query){
                         $query->select(['id','address']);
                     }, 'itembuilding'=>function($query){
                         $query->select(['id','building']);
                     }, 'household'=>function($query){
-                    $query->select(['id','unit','floor','number','type','username']);
-                }])
-                ->where($where)
-                ->select($select)
-                ->orderBy($ordername,$orderby)
-                ->sharedLock()
-                ->offset($per_page*($page-1))
-                ->limit($per_page)
-                ->get();
+                        $query->select(['id','unit','floor','number','type','username']);
+                    }])
+                    ->where($where)
+                    ->select($select)
+                    ->orderBy($ordername,$orderby)
+                    ->sharedLock()
+                    ->offset($per_page*($page-1))
+                    ->limit($per_page)
+                    ->get();
+            }
+
             if(blank($households)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -656,7 +721,14 @@ class HouseholddetailController extends BaseitemController
         $household_id = $request->input('household_id');
         if($request->isMethod('get')){
             DB::beginTransaction();
-            $estatebuilding =  Estatebuilding::where('item_id',$item_id)->where('household_id',$household_id)->where('household_building_id',0)->get();
+            $estatebuilding =  Estatebuilding::sharedLock()
+                ->with(['company'=>function($query){
+                    $query->select(['id','name']);
+                }])
+                ->where('item_id',$item_id)
+                ->where('household_id',$household_id)
+                ->where('household_building_id',0)
+                ->get();
             DB::commit();
             if(blank($estatebuilding)){
                 $code = 'warning';

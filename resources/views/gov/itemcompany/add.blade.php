@@ -57,6 +57,7 @@
                         <tr>
                             <th>地址</th>
                             <th>房号</th>
+                            <th>用户名</th>
                             <th>资产</th>
                             <th>操作</th>
                         </tr>
@@ -85,6 +86,8 @@
                         <form action="{{route('g_householddetail',['item'=>$sdata['item_id']])}}" role="form" method="get" class="form-inline" id="form-search-household">
                             {{csrf_field()}}
                             <input type="hidden" name="page" value="1" id="current-page">
+                            <input type="hidden" name="company_household" value="1">
+                            <input type="hidden" name="types" value="{{$sdata['type']}}">
                             @if($sdata['type'])
                             <input type="hidden" name="has_assets" value="{{$sdata['type']}}">
                             @endif
@@ -108,6 +111,7 @@
                             <th><input type="checkbox"></th>
                             <th>地址</th>
                             <th>房号</th>
+                            <th>用户名</th>
                             <th>资产</th>
                         </tr>
                         </thead>
@@ -188,9 +192,15 @@
                             choose_household_ids.push(household_id);
                             choose_households.push(info);
 
+                            var building = info.itembuilding.building?info.itembuilding.building +'栋':'';
+                            var unit = info.household.unit?info.household.unit+'单元':'';
+                            var floor = info.household.floor?info.household.floor+'楼':'';
+                            var number = info.household.number?info.household.number +'号':'';
+
                             tr += ' <tr id="household-'+info.household_id+'">' +
                                 '<td><input type="hidden" name="household_ids[]" value="'+info.household_id+'">' + info.itemland.address + '</td>' +
-                                '<td>' + info.itembuilding.building +'栋'+info.household.unit+'单元'+info.household.floor+'楼'+info.household.number+ '号</td>' +
+                                '<td>' + building +unit+floor+number+ '</td>' +
+                                '<td>' + info.household.username + '</td>' +
                                 '<td>' + info.has_assets + '</td>' +
                                 '<td><a class="btn btn-sm" onclick="removeHousehold('+household_id+')">删除</a></td>' +
                                 '</tr>';
@@ -226,10 +236,15 @@
                     if($.inArray(info.household_id,choose_household_ids)>-1){
                         checked='checked';
                     }
+                    var building = info.itembuilding.building?info.itembuilding.building +'栋':'';
+                    var unit = info.household.unit?info.household.unit+'单元':'';
+                    var floor = info.household.floor?info.household.floor+'楼':'';
+                    var number = info.household.number?info.household.number +'号':'';
                     tr += ' <tr>' +
                         '<td><input type="checkbox" value="' + info.household_id + '" '+checked+'></td>' +
                         '<td>' + info.itemland.address + '</td>' +
-                        '<td>' + info.itembuilding.building +'栋'+info.household.unit+'单元'+info.household.floor+'楼'+info.household.number+ '号</td>' +
+                        '<td>' + building +unit+floor+number+ '</td>' +
+                        '<td>' + info.household.username + '</td>' +
                         '<td>' + info.has_assets + '</td>' +
                         '</tr>';
                 });

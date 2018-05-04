@@ -53,6 +53,7 @@
                         <tr>
                             <th>地址</th>
                             <th>房号</th>
+                            <th>用户名</th>
                             <th>资产</th>
                             <th>操作</th>
                         </tr>
@@ -64,7 +65,8 @@
                             <tr id="household-{{$info->household_id}}">
                                 <td><input type="hidden" name="household_ids[]" value="{{$info->household_id}}">
                                     {{$info->household->itemland->address}}</td>
-                                <td>{{$info->household->itembuilding->building}}栋{{$info->household->unit}}单元{{$info->household->floor}}楼{{$info->household->number}}号</td>
+                                <td>{{$info->household->itembuilding->building?$info->household->itembuilding->building.'栋':''}}{{$info->household->unit?$info->household->unit.'单元':''}}{{$info->household->floor?$info->household->floor.'楼':''}}{{$info->household->number?$info->household->number.'号':''}}</td>
+                                <td>{{$info->household->username}}</td>
                                 <td>{{$info->household->householddetail->has_assets}}</td>
                                 <td><a class="btn btn-sm" onclick="removeHousehold({{$info->household_id}})">删除</a></td>
                             </tr>
@@ -91,6 +93,8 @@
                         <form action="{{route('g_householddetail',['item'=>$sdata['item_id']])}}" role="form" method="get" class="form-inline" id="form-search-household">
                             {{csrf_field()}}
                             <input type="hidden" name="page" value="1" id="current-page">
+                            <input type="hidden" name="company_household" value="1">
+                            <input type="hidden" name="types" value="{{$sdata['itemcompany']->getOriginal('type')}}">
                             @if($sdata['itemcompany']->getOriginal('type'))
                             <input type="hidden" name="has_assets" value="{{$sdata['itemcompany']->getOriginal('type')}}">
                             @endif
@@ -114,6 +118,7 @@
                             <th><input type="checkbox"></th>
                             <th>地址</th>
                             <th>房号</th>
+                            <th>用户名</th>
                             <th>资产</th>
                         </tr>
                         </thead>
@@ -127,6 +132,27 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{--删除确认--}}
+    <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">删除确认</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="del_id" value="">
+                    当前被征收户存在评估机构摸底数据，你确定要清除评估机构数据吗？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary del_ok">确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 </div>
             </div>
         </div>
@@ -193,10 +219,15 @@
                             var info=ajaxResp.sdata.data[index];
                             choose_household_ids.push(household_id);
                             choose_households.push(info);
+                            var building = info.itembuilding.building?info.itembuilding.building +'栋':'';
+                            var unit = info.household.unit?info.household.unit+'单元':'';
+                            var floor = info.household.floor?info.household.floor+'楼':'';
+                            var number = info.household.number?info.household.number +'号':'';
 
                             tr += ' <tr id="household-'+info.household_id+'">' +
                                 '<td><input type="hidden" name="household_ids[]" value="'+info.household_id+'">' + info.itemland.address + '</td>' +
-                                '<td>' + info.itembuilding.building +'栋'+info.household.unit+'单元'+info.household.floor+'楼'+info.household.number+ '号</td>' +
+                                '<td>' + building +unit+floor+number+ '</td>' +
+                                '<td>' + info.household.username + '</td>' +
                                 '<td>' + info.has_assets + '</td>' +
                                 '<td><a class="btn btn-sm" onclick="removeHousehold('+household_id+')">删除</a></td>' +
                                 '</tr>';
@@ -214,12 +245,40 @@
         // 删除选择
         function removeHousehold(household_id) {
             var pos=$.inArray(household_id,choose_household_ids);
+            var type = '{{$sdata['itemcompany']->getOriginal('type')}}';
             if(pos>-1){
-                choose_household_ids.splice(pos,1);
-                choose_households.splice(pos,1);
-                $('#household-'+household_id).remove();
+                ajaxAct('{{route('g_search_com_data')}}',{item:'{{$sdata['item_id']}}',household_id:household_id,type:type},'get');
+                if(ajaxResp.code=='success') {
+                    choose_household_ids.splice(pos, 1);
+                    choose_households.splice(pos, 1);
+                    $('#household-' + household_id).remove();
+                    toastr.success(ajaxResp.message);
+                }else{
+                    $('#delModal').modal('show');
+                    $("#del_id").val(household_id);
+                    toastr.error(ajaxResp.message);
+                }
             }
         }
+        //删除确认
+        $('.del_ok').on('click',function() {
+            var del_id = $('#del_id').val();
+            var type = '{{$sdata['itemcompany']->getOriginal('type')}}';
+            var company_id = '{{$sdata['itemcompany']->company_id}}';
+            ajaxAct('{{route('g_del_com_data')}}',{item:'{{$sdata['item_id']}}',household_id:del_id,type:type,company_id:company_id},'get');
+            if(ajaxResp.code=='success'){
+                var pos=$.inArray(parseInt(del_id),choose_household_ids);
+                if(pos>-1) {
+                    choose_household_ids.splice(pos, 1);
+                    choose_households.splice(pos, 1);
+                    $('#household-' + del_id).remove();
+                }
+                toastr.success(ajaxResp.message);
+                $('#delModal').modal('hide');
+            }else{
+                toastr.error(ajaxResp.message);
+            }
+        });
         // 获取被征收户
         function getHousehold(form) {
             ajaxAct(form.attr('action'),form.serialize(),'get');
@@ -232,10 +291,15 @@
                     if($.inArray(info.household_id,choose_household_ids)>-1){
                         checked='checked';
                     }
+                    var building = info.itembuilding.building?info.itembuilding.building +'栋':'';
+                    var unit = info.household.unit?info.household.unit+'单元':'';
+                    var floor = info.household.floor?info.household.floor+'楼':'';
+                    var number = info.household.number?info.household.number +'号':'';
                     tr += ' <tr>' +
                         '<td><input type="checkbox" value="' + info.household_id + '" '+checked+'></td>' +
                         '<td>' + info.itemland.address + '</td>' +
-                        '<td>' + info.itembuilding.building +'栋'+info.household.unit+'单元'+info.household.floor+'楼'+info.household.number+ '号</td>' +
+                        '<td>' + building+unit+floor+number+ '</td>' +
+                        '<td>' + info.household.username + '</td>' +
                         '<td>' + info.has_assets + '</td>' +
                         '</tr>';
                 });

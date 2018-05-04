@@ -5,8 +5,12 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\gov;
+use App\Http\Model\Assets;
+use App\Http\Model\Comassessvaluer;
 use App\Http\Model\Company;
 use App\Http\Model\Companyhousehold;
+use App\Http\Model\Estate;
+use App\Http\Model\Estatebuilding;
 use App\Http\Model\Itembuilding;
 use App\Http\Model\Itemcompany;
 use App\Http\Model\Itemland;
@@ -221,7 +225,7 @@ class ItemcompanyController extends BaseitemController
                     $query->select(['id','name']);
                 },'households'=>function($query){
                     $query->with(['household'=>function($query){
-                        $query->select(['id','land_id','building_id','unit','floor','number','type'])
+                        $query->select(['id','land_id','building_id','unit','floor','number','type','username'])
                             ->with(['itemland'=>function($querys){
                                 $querys->select(['id','address']);
                             },
@@ -283,7 +287,7 @@ class ItemcompanyController extends BaseitemController
                         $query->select(['id','name']);
                     },'households'=>function($query){
                         $query->with(['household'=>function($query){
-                            $query->select(['id','land_id','building_id','unit','floor','number','type'])
+                            $query->select(['id','land_id','building_id','unit','floor','number','type','username'])
                                 ->with(['itemland'=>function($querys){
                                     $querys->select(['id','address']);
                                 },
@@ -476,5 +480,108 @@ class ItemcompanyController extends BaseitemController
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
             return response()->json($result);
         }
+    }
+
+
+    /* ========== 【点击删除时调用】评估机构征收范围删除被征收户【检测删除的被征收户有无摸底数据及评估数据】 ========== */
+    public function search_com_data(Request $request){
+        $household_id = $request->input('household_id');
+        $item_id = $this->item_id;
+        $type = $request->input('type');
+        if($type){
+            /*--- 资产 ---*/
+            $data_count = Assets::sharedLock()->where('household_id',$household_id)->where('item_id',$item_id)->count();
+        }else{
+            /*--- 房产 ---*/
+            $data_count = Estate::sharedLock()->where('household_id',$household_id)->where('item_id',$item_id)->count();
+        }
+
+        if($data_count){
+            $result=['code'=>'error','message'=>'存在评估数据','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }else{
+            $result=['code'=>'success','message'=>'删除成功！','sdata'=>null,'edata'=>null,'url'=>null];
+            return response()->json($result);
+        }
+    }
+
+    /* ========== 【点击删除确认时调用】评估机构征收范围删除被征收户【删除被征收户摸底数据及评估数据】 ========== */
+    public function del_com_data(Request $request){
+        $type = $request->input('type');
+        $household_id = $request->input('household_id');
+        $company_id = $request->input('company_id');
+        $item_id = $this->item_id;
+        if($type){
+            /*==========【删除房产资产评估端数据】=======*/
+            DB::beginTransaction();
+            try{
+                /*---------- 删除评估记录 ----------*/
+                $comassessvaluer_count = Comassessvaluer::where('household_id',$household_id)->where('estate_id',0)->where('item_id',$item_id)->where('company_id',$company_id)->forceDelete();
+                if(blank($comassessvaluer_count)){
+                    throw new \Exception('删除失败',404404);
+                }
+                /*---------- 删除资产评估 ----------*/
+                $del_assets = Assets::where('household_id',$household_id)->where('item_id',$item_id)->forceDelete();
+                if(blank($del_assets)){
+                    throw new \Exception('删除失败',404404);
+                }
+
+                $code = 'success';
+                $msg = '删除成功';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+                DB::commit();
+            }catch (\Exception $exception){
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+                DB::rollBack();
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }else{
+            /*==============【删除房产评估端数据】==============*/
+            DB::beginTransaction();
+            try{
+                /*---------- 删除房产评估 ----------*/
+                $del_estate = Estate::where('household_id',$household_id)->where('item_id',$item_id)->forceDelete();
+                if(blank($del_estate)){
+                    throw new \Exception('删除失败',404404);
+                }
+                /*---------- 删除房产建筑评估 ----------*/
+                $estate_building_count = Estatebuilding::where('household_id',$household_id)->where('item_id',$item_id)->count();
+                if($estate_building_count){
+                    $del_estate_building = Estatebuilding::where('household_id',$household_id)->where('item_id',$item_id)->forceDelete();
+                    if(blank($del_estate_building)){
+                        throw new \Exception('删除失败',404404);
+                    }
+                }
+                /*---------- 删除评估记录 ----------*/
+                $comassessvaluer_count = Comassessvaluer::where('household_id',$household_id)->where('assets_id',0)->where('item_id',$item_id)->where('company_id',$company_id)->forceDelete();
+                if(blank($comassessvaluer_count)){
+                    throw new \Exception('删除失败',404404);
+                }
+
+                $code = 'success';
+                $msg = '删除成功';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+                DB::commit();
+            }catch (\Exception $exception){
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络错误';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+                DB::rollBack();
+            }
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            return response()->json($result);
+        }
+
     }
 }

@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\gov;
+use App\Http\Model\Estate;
 use App\Http\Model\Household;
 use App\Http\Model\Householdbuilding;
 use App\Http\Model\Householddetail;
@@ -61,44 +62,6 @@ class HouseholdbuildingareaController extends BaseitemController
             ->where($where)
             ->whereNotin('area_dispute',['0','3','5'])
             ->count();
-        /*============== 检测测绘状态【更改面积争议的测绘状态】 ================*/
-        $householddetail =  Householddetail::with([
-            'householdbuildings'=>function($query){
-                $query->with(['landlayout'=>function($querys){
-                    $querys->whereNotnull('picture');
-                }]);
-             }])
-            ->withCount(['householdbuildings',
-                'householdbuildings as householdbuildings_layout'=>function($query){
-                    $query->whereNotnull('layout_id');
-                }
-            ])
-            ->where('item_id',$item_id)
-            ->where('area_dispute','1')
-            ->get();
-
-        if(!blank($householddetail)){
-            $household_ids = [];
-            foreach($householddetail as $k=>$v){
-                if($v['householdbuildings_count']==$v['householdbuildings_layout']){
-                    $num = 0;
-                    foreach($v['householdbuildings'] as $key=>$val){
-                        if(!is_null($val->landlayout->id)){
-                            if(!in_array($v['household_id'],$household_ids)){
-                                $num+=1;
-                            }
-                        }
-                    }
-                    /* 已测绘的建筑户型数量与建筑户型数量比较*/
-                    if($num==$v['householdbuildings_layout']){
-                        $household_ids[] = $v['household_id'];
-                    }
-                }
-            }
-           if($household_ids!=[]){
-              Householddetail::whereIn('household_id',$household_ids)->update(['area_dispute'=>2,'updated_at'=>date('Y-m-d H:i:s')]);
-           }
-       }
 
         /* ********** 查询 ********** */
         DB::beginTransaction();

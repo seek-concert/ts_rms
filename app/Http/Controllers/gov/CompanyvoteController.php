@@ -77,7 +77,7 @@ class CompanyvoteController extends BaseitemController
             }
             $households=Companyvote::with(['household'=>function($query){
                 $query->with(['itemland','itembuilding'])
-                    ->select(['id','item_id','land_id','building_id','unit','floor','number']);
+                    ->select(['id','item_id','land_id','building_id','unit','floor','number','username']);
             }])
                 ->sharedLock()
                 ->get();
