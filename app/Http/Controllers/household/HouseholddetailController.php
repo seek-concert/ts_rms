@@ -16,6 +16,8 @@ use App\Http\Model\Householdassets;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Pagination\LengthAwarePaginator;
+use App\Http\Model\Itemrisk;
 
 class  HouseholddetailController extends BaseController
 {
@@ -413,6 +415,193 @@ class  HouseholddetailController extends BaseController
             $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
             return response()->json($result);
         }
+
+    }
+
+    /*确认面积争议*/
+    public function area(Request $request){
+        $item_id=$this->item_id;
+        $item=$this->item;
+        $infos['item'] = $item;
+
+        if($request->isMethod('get')){
+            /* ********** 查询条件 ********** */
+            $where=[];
+            $where[] = ['item_id',$item_id];
+            $infos['item_id'] = $item_id;
+            /* ********** 地块 ********** */
+            $land_id=$request->input('land_id');
+            if(is_numeric($land_id)){
+                $where[] = ['land_id',$land_id];
+                $infos['land_id'] = $land_id;
+            }
+            /* ********** 楼栋 ********** */
+            $building_id=$request->input('building_id');
+            if(is_numeric($building_id)){
+                $where[] = ['building_id',$building_id];
+                $infos['building_id'] = $building_id;
+            }
+            /* ********** 排序 ********** */
+            $ordername=$request->input('ordername');
+            $ordername=$ordername?$ordername:'area_dispute';
+            $infos['ordername']=$ordername;
+
+            $orderby=$request->input('orderby');
+            $orderby=$orderby?$orderby:'asc';
+            $infos['orderby']=$orderby;
+            /* ********** 每页条数 ********** */
+            $per_page=15;
+            $page=$request->input('page',1);
+            $infos['wait_num']=Householddetail::sharedLock()
+                ->where($where)
+                ->whereNotin('area_dispute',['0','3','5'])
+                ->count();
+            /*============== 检测测绘状态【更改面积争议的测绘状态】 ================*/
+            $householddetail =  Householddetail::with([
+                'householdbuildings'=>function($query){
+                    $query->with(['landlayout'=>function($querys){
+                        $querys->whereNotnull('picture');
+                    }]);
+                }])
+                ->withCount(['householdbuildings',
+                    'householdbuildings as householdbuildings_layout'=>function($query){
+                        $query->whereNotnull('layout_id');
+                    }
+                ])
+                ->where('item_id',$item_id)
+                ->where('area_dispute','1')
+                ->get();
+
+            if(!blank($householddetail)){
+                $household_ids = [];
+                foreach($householddetail as $k=>$v){
+                    if($v['householdbuildings_count']==$v['householdbuildings_layout']){
+                        $num = 0;
+                        foreach($v['householdbuildings'] as $key=>$val){
+                            if(!is_null($val->landlayout->id)){
+                                if(!in_array($v['household_id'],$household_ids)){
+                                    $num+=1;
+                                }
+                            }
+                        }
+                        /* 已测绘的建筑户型数量与建筑户型数量比较*/
+                        if($num==$v['householdbuildings_layout']){
+                            $household_ids[] = $v['household_id'];
+                        }
+                    }
+                }
+                if($household_ids!=[]){
+                    Householddetail::whereIn('household_id',$household_ids)->update(['area_dispute'=>2,'updated_at'=>date('Y-m-d H:i:s')]);
+                }
+            }
+
+            /* ********** 查询 ********** */
+            DB::beginTransaction();
+            try{
+
+                $total=Householddetail::sharedLock()
+                    ->where($where)
+                    ->where('area_dispute','<>','0')
+                    ->count();
+                $households=Householddetail::with([
+                    'itemland'=>function($query){
+                        $query->select(['id','address']);
+                    },
+                    'itembuilding'=>function($query){
+                        $query->select(['id','building']);
+                    }])
+                    ->withCount(['householdbuildings'=>function($query){
+                        $query->whereNull('layout_id');
+                    }])
+                    ->where($where)
+                    ->where('area_dispute','<>','0')
+                    ->orderBy($ordername,$orderby)
+                    ->sharedLock()
+                    ->offset($per_page*($page-1))
+                    ->limit($per_page)
+                    ->get();
+                $households=new LengthAwarePaginator($households,$total,$per_page,$page);
+                $households->withPath(route('h_householddetail_area',['item'=>$item_id]));
+
+
+                if(blank($households)){
+                    throw new \Exception('没有符合条件的数据',404404);
+                }
+                $code='success';
+                $msg='查询成功';
+                $sdata=$households;
+                $edata=$infos;
+                $url=null;
+            }catch (\Exception $exception){
+                $code='error';
+                $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
+                $sdata=null;
+                $edata=$infos;
+                $url=null;
+            }
+            DB::commit();
+
+            /* ********** 结果 ********** */
+            $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
+            if($request->ajax()){
+                return response()->json($result);
+            }else {
+                return view('household.householddetail.area')->with($result);
+            }
+        }
+        /*被征户提交面积争议确认结果*/
+        else{
+            /* ++++++++++ 表单验证 ++++++++++ */
+            $model=new Householddetail();
+            $rules = [
+                'area_dispute' => 'required'
+            ];
+            $messages = [
+                'required' => ':attribute必须选择'
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages, $model->columns);
+            if ($validator->fails()) {
+                $result = ['code' => 'error', 'message' => $validator->errors()->first(), 'sdata' => null, 'edata' => null, 'url' => null];
+                return response()->json($result);
+            }
+            /* ********** 更新 ********** */
+            DB::beginTransaction();
+            try {
+                /* ++++++++++ 锁定数据模型 ++++++++++ */
+                $householddetail = Householddetail::lockForUpdate()
+                    ->where('household_id',$this->household_id)
+                    ->where('item_id',$this->item_id)
+                    ->first();
+                if (blank($householddetail)) {
+                    throw new \Exception('指定数据项不存在', 404404);
+                }
+                /* ++++++++++ 处理其他数据 ++++++++++ */
+                $householddetail->area_dispute=$request->input('area_dispute');
+                $householddetail->save();
+                if (blank($householddetail)) {
+                    throw new \Exception('修改失败', 404404);
+                }
+                $code = 'success';
+                $msg = '修改成功';
+                $sdata = $householddetail;
+                $edata = null;
+                $url = route('h_householddetail_info');
+
+                DB::commit();
+            } catch (\Exception $exception) {
+                $code = 'error';
+                $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '网络异常';
+                $sdata = null;
+                $edata = null;
+                $url = null;
+                DB::rollBack();
+            }
+            /* ********** 结果 ********** */
+            $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
+            return response()->json($result);
+
+        }
+
 
     }
 }

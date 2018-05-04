@@ -7,12 +7,10 @@
 /*---------- 首页 ----------*/
 Route::any('/home','HomeController@index')->name('h_home');
 
-
 /*---------- 社会稳定性风险评估 ----------*/
 Route::any('/itemrisk_info','ItemriskController@info')->name('h_itemrisk_info');
 Route::any('/itemrisk_add','ItemriskController@add')->name('h_itemrisk_add');
 Route::any('/itemrisk_edit','ItemriskController@edit')->name('h_itemrisk_edit');
-
 
 /*---------- 评估公司投票 ----------*/
 Route::any('/itemcompanyvote','CompanyvoteController@index')->name('h_itemcompanyvote');//投票机构
@@ -22,7 +20,6 @@ Route::any('/itemcompanyvote_edit','CompanyvoteController@edit')->name('h_itemco
 Route::any('/itemcompany','ItemcompanyController@index')->name('h_itemcompany');//入围机构
 Route::any('/company_info','CompanyController@info')->name('h_company_info');//评估机构详情
 
-
 /*---------- 被征户摸底情况 ----------*/
 Route::any('/householddetail','HouseholddetailController@index')->name('h_householddetail');
 Route::any('/householddetail_info','HouseholddetailController@info')->name('h_householddetail_info');
@@ -30,6 +27,12 @@ Route::any('/householdbuilding_info','HouseholdbuildingController@info')->name('
 Route::any('/householdmember_info','HouseholdmemberController@info')->name('h_householdmember_info');
 Route::any('/householdmembercrowd_info','HouseholdmembercrowdController@info')->name('h_householdmembercrowd_info');
 Route::any('/householdobject_info','HouseholdobjectController@info')->name('h_householdobject_info');
+Route::any('/householddetail_area','HouseholddetailController@area')->name('h_householddetail_area');   //处理面积争议
+
+/*确权确户*/
+Route::any('/householdright','HouseholdrightController@index')->name('h_householdright');
+Route::any('/householdright_info','HouseholdrightController@info')->name('h_householdright_info');
+Route::any('/householdright_confirm','HouseholdrightController@confirm')->name('h_householdright_confirm');
 
 /*---------- 兑付--汇总 ----------*/
 Route::any('/pay','PayController@index')->name('h_pay');
@@ -65,5 +68,10 @@ Route::any('/payhousebak_remove','PayhousebakController@remove')->name('h_payhou
 
 /*通知公告*/
 Route::any('/news_info','NewsController@info')->name('h_news_info');
+
+/*面积争议确认*/
+Route::any('/buildingarea_confirm','HouseholdbuildingareaController@confirm')->name('h_buildingarea_confirm');
+
+
 
 

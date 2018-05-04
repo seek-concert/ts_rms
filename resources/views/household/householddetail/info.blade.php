@@ -130,6 +130,19 @@
                                 </div>
 
                                 <div class="profile-info-row">
+                                    <div class="profile-info-name"> 面积争议：</div>
+                                    <div class="profile-info-value">
+                                        <span class="editable editable-click">
+                                            {{$edata['household_detail']->area_dispute}}
+                                            @if($edata['household_detail']->area_dispute==2)
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <a href="{{route('h_householddetail_area')}}">去处理 >></a>
+                                            @endif
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
                                     <div class="profile-info-name"> 状态：</div>
                                     <div class="profile-info-value">
                                         <span class="editable editable-click">{{$edata['household_detail']->state}}</span>

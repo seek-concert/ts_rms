@@ -141,6 +141,21 @@ class AssessController extends BaseController{
             if (blank($assess)) {
                 throw new \Exception('修改失败', 404404);
             }
+
+            $estate=Estate::sharedLock()
+                ->where('assess_id',$id)
+                ->update(['code'=>$code]);
+            if(blank($estate)){
+                throw new \Exception('修改失败', 404404);
+            }
+
+            $assets=Assets::sharedLock()
+                ->where('assess_id',$id)
+                ->update(['code'=>$code]);
+            if(blank($assets)){
+                throw new \Exception('修改失败', 404404);
+            }
+
             $code='success';
             $msg='操作成功';
             $sdata=null;
