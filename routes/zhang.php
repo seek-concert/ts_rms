@@ -249,6 +249,8 @@ Route::any('/itemcompany','ItemcompanyController@index')->name('g_itemcompany');
 Route::any('/itemcompany_add','ItemcompanyController@add')->name('g_itemcompany_add');
 Route::get('/itemcompany_info','ItemcompanyController@info')->name('g_itemcompany_info');
 Route::any('/itemcompany_edit','ItemcompanyController@edit')->name('g_itemcompany_edit');
+Route::any('/search_com_data','ItemcompanyController@search_com_data')->name('g_search_com_data');
+Route::any('/del_com_data','ItemcompanyController@del_com_data')->name('g_del_com_data');
 
 
 /*+++++++++++++++ 【Excel导出导入】 ++++++++++++++++*/
