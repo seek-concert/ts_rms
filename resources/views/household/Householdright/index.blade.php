@@ -10,14 +10,13 @@
             <div class="tabbable">
                 <ul class="nav nav-tabs" id="myTab">
 
-                    @if($sdata['household']->getOriginal('area_dispute')==2)
                     <li class="active">
                         <a data-toggle="tab" href="#householdbuildingarea" aria-expanded="false">
                             <i class="green ace-icon fa fa-home bigger-120"></i>
                             面积争议
                         </a>
                     </li>
-                    @endif
+
 
 
                     @if(isset($sdata['householdright']))
@@ -68,8 +67,9 @@
 
 
                 <div class="tab-content">
-                    @if(isset($sdata['householdbuildingarea']))
+
                     <div id="householdbuildingarea" class="tab-pane fade active in">
+                        @if(isset($sdata['householdbuildingarea']))
                             <div class="profile-user-info profile-user-info-striped">
 
                                 <div class="profile-info-row">
@@ -101,19 +101,20 @@
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 创建时间：</div>
                                     <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$sdata->created_at}}</span>
+                                        <span class="editable editable-click">{{$sdata['householdbuildingarea']->created_at}}</span>
                                     </div>
                                 </div>
 
                                 <div class="profile-info-row">
                                     <div class="profile-info-name"> 更新时间：</div>
                                     <div class="profile-info-value">
-                                        <span class="editable editable-click">{{$sdata->updated_at}}</span>
+                                        <span class="editable editable-click">{{$sdata['householdbuildingarea']->updated_at}}</span>
                                     </div>
                                 </div>
 
                             </div>
-                        @if(isset($sdata['household']) && $sdata['household']->getOriginal('area_dispute')==2)
+                        @endif
+                        @if(isset($sdata['householddetail']) && $sdata['householddetail']->getOriginal('area_dispute')==2)
                             <form class="form-horizontal" role="form" action="{{route('h_buildingarea_confirm')}}"
                                   method="post">
                                 {{csrf_field()}}
@@ -145,13 +146,13 @@
                             </form>
                         @endif
                     </div>
-                    @endif
+
 
                     @if(isset($sdata['householdright']))
                         <div id="householdright" class="tab-pane fade ">
 
                             <div class="profile-info-row">
-                                <div class="profile-info-name"> 争议处理状态：{{$sdata['household']->dispute}}</div>
+                                <div class="profile-info-name"> 争议处理状态：{{$sdata['householddetail']->dispute}}</div>
                                 <div class="profile-info-value">
                                     <span class="editable editable-click">
                                         @switch($infos->getOriginal('area_dispute'))
@@ -549,8 +550,7 @@
                         </div>
                     @endif
                 </div>
-
-                @if(filled($sdata) && ($sdata['household']->getOriginal('area_dispute')>2  || $sdata['household']->getOriginal('area_dispute')==0))
+                @if(filled($sdata) && in_array($sdata['householddetail']->getOriginal('area_dispute'),[0,3,5]) && in_array($sdata['householddetail']->getOriginal('dispute'),[0,2]) && $sdata['building_check']==0 && $sdata['householddetail']->household->code==62 && $sdata['assess']->code==136)
                     <form class="form-horizontal" role="form" action="{{route('h_householdright_confirm')}}"
                           method="post">
                         {{csrf_field()}}
@@ -560,11 +560,20 @@
                                     <i class="ace-icon fa fa-check-square-o bigger-110"></i>
                                     确权确户
                                 </button>
-                                &nbsp;&nbsp;&nbsp
                             </div>
                         </div>
                     </form>
-                @endif
+                    @endif
+                    @if($sdata['householddetail']->household->code==63)
+                    <div class="clearfix form-actions">
+                        <div class="col-md-offset-5 col-md-7">
+                        <button class="btn btn-success" type="button" disabled>
+                            <i class="ace-icon fa fa-check-square bigger-110"></i>
+                            已确权确户
+                        </button>
+                        </div>
+                    </div>
+                    @endif
             </div>
         </div>
     </div>

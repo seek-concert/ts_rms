@@ -409,11 +409,8 @@
                                 <th>楼层</th>
                                 <th>朝向</th>
                                 <th>结构</th>
-                                <th>登记套内面积</th>
                                 <th>登记建筑面积</th>
                                 <th>阳台面积</th>
-                                <th>面积争议</th>
-                                <th>实际套内面积</th>
                                 <th>实际建筑面积</th>
                                 <th>批准用途</th>
                                 <th>实际用途</th>
@@ -430,11 +427,8 @@
                                         <td>{{$infos->floor}}</td>
                                         <td>{{$infos->direct}}</td>
                                         <td>{{$infos->buildingstruct->name}}</td>
-                                        <td>{{$infos->reg_inner}}</td>
                                         <td>{{$infos->reg_outer}}</td>
                                         <td>{{$infos->balcony}}</td>
-                                        <td>{{$infos->dispute}}</td>
-                                        <td>{{$infos->real_inner}}</td>
                                         <td>{{$infos->real_outer}}</td>
                                         <td>{{$infos->defbuildinguse->name}}</td>
                                         <td>{{$infos->realbuildinguse->name}}</td>

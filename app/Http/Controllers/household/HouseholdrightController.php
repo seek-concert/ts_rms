@@ -12,6 +12,7 @@ use App\Http\Model\Householdbuildingarea;
 use App\Http\Model\Filecate;
 use App\Http\Model\Filetable;
 use App\Http\Model\Assess;
+use App\Http\Model\Household;
 /*
 |--------------------------------------------------------------------------
 | 被征收户-确权确户
@@ -64,6 +65,13 @@ class HouseholdrightController extends BaseController{
                 ->orderBy('code','desc')
                 ->sharedLock()
                 ->get();
+            $building_check=0;
+            foreach ($householdbuildings as $k=>$v){
+                if(!in_array($v->code,[90,92,94,95])){
+                    $building_check=1;
+                    break;
+                }
+            }
 
             /*面积争议*/
             $householdbuildingarea=Householdbuildingarea::sharedLock()
@@ -72,9 +80,12 @@ class HouseholdrightController extends BaseController{
                 ->first();
 
             /*被征户信息*/
-            $household=Householddetail::with([
+            $householddetail=Householddetail::with([
                 'itemland'=>function($query){
                     $query->select(['id','address']);
+                },
+                'household'=>function($query){
+                    $query->select(['code','id']);
                 },
                 'itembuilding'=>function($query){
                     $query->select(['id','building']);
@@ -116,21 +127,28 @@ class HouseholdrightController extends BaseController{
                 ->sharedLock()
                 ->get();
 
+            /*评估状态*/
+            $assess=Assess::where('household_id',$this->household_id)
+                ->where('item_id',$this->item_id)
+                ->first();
 
-            if(blank($household)){
+
+            if(blank($householddetail)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
             $code='success';
             $msg='查询成功';
             $sdata=[
-                'household'=>$household,
+                'householddetail'=>$householddetail,
                 'householdright'=>$householdright,
                 'householdbuildings'=>$householdbuildings,
                 'householdbuildingarea'=>$householdbuildingarea,
                 'householdassetss'=>$householdassetss,
                 'householdestate'=>$householdestate,
                 'detail_filecates'=>$detail_filecates,
-                'itempublics'=>$itempublics
+                'itempublics'=>$itempublics,
+                'building_check'=>$building_check,
+                'assess'=>$assess,
             ];
             $edata=null;
             $url=null;
@@ -142,7 +160,6 @@ class HouseholdrightController extends BaseController{
             $url=null;
         }
         DB::commit();
-
 
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
@@ -203,22 +220,32 @@ class HouseholdrightController extends BaseController{
 
         DB::beginTransaction();
         try{
-            $householddetail=Householddetail::sharedLock()
-                ->where('household_id',$this->household_id)
-                ->where('item_id',$this->item_id)
-                ->first();
+            $household=Household::sharedLock()
+                ->with('householddetail')
+                ->find($this->household_id);
+            if($household->code!=62){
+                throw new \Exception('被征户【'.$household->state->name.'】，不能进行该操作！', 404404);
+            }
 
-            if($householddetail->getOriginal('area_dispute')==2 || $householddetail->getOriginal('area_dispute')==1){
+            if(!in_array($household->householddetail->getOriginal('area_dispute'),[0,3,5])){
                 throw new \Exception('面积争议待处理！', 404404);
             }
 
-            if($householddetail!=62){
-                throw new \Exception('被征户【'.$householddetail->state->name.'】，不能进行该操作！', 404404);
+            if(!in_array($household->householddetail->getOriginal('dispute'),[0,2])){
+                throw new \Exception('产权争议待处理！', 404404);
             }
 
-            $householddetail->code=63;
-            $householddetail->save();
-            if(blank($householddetail)){
+            $codes = DB::table('item_household_building')->where('household_id',$this->household_id)->pluck('code')->toArray();
+            foreach ($codes as $k=>$v){
+                if(!in_array($v,[90,92,94,95])){
+                    throw new \Exception('房屋建筑合法性认定中！', 404404);
+                    break;
+                }
+            }
+
+            $household->code=63;
+            $household->save();
+            if(blank($household)){
                 throw new \Exception('保存失败！', 404404);
             }
             $code = 'success';
@@ -228,7 +255,7 @@ class HouseholdrightController extends BaseController{
             $url = route('h_householdright');
             DB::commit();
         }catch (\Exception $exception) {
-
+            var_dump($exception->getMessage());
             DB::rollBack();
             $code = 'error';
             $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '保存失败';
