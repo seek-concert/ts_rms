@@ -550,7 +550,7 @@
                         </div>
                     @endif
                 </div>
-                @if(filled($sdata) && in_array($sdata['householddetail']->getOriginal('area_dispute'),[0,3,5]) && in_array($sdata['householddetail']->getOriginal('dispute'),[0,2]) && $sdata['building_check']==0 && $sdata['householddetail']->household->code==62 && $sdata['assess']->code==136)
+                @if(filled($sdata) && in_array($sdata['householddetail']->getOriginal('area_dispute'),[0,3,5]) && in_array($sdata['householddetail']->getOriginal('dispute'),[0,2]) && $sdata['building_check']==0 && $sdata['householddetail']->household->code==62 )
                     <form class="form-horizontal" role="form" action="{{route('h_householdright_confirm')}}"
                           method="post">
                         {{csrf_field()}}
