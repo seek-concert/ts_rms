@@ -127,12 +127,6 @@ class HouseholdrightController extends BaseController{
                 ->sharedLock()
                 ->get();
 
-            /*评估状态*/
-            $assess=Assess::where('household_id',$this->household_id)
-                ->where('item_id',$this->item_id)
-                ->first();
-
-
             if(blank($householddetail)){
                 throw new \Exception('没有符合条件的数据',404404);
             }
@@ -147,8 +141,7 @@ class HouseholdrightController extends BaseController{
                 'householdestate'=>$householdestate,
                 'detail_filecates'=>$detail_filecates,
                 'itempublics'=>$itempublics,
-                'building_check'=>$building_check,
-                'assess'=>$assess,
+                'building_check'=>$building_check
             ];
             $edata=null;
             $url=null;
@@ -205,19 +198,6 @@ class HouseholdrightController extends BaseController{
     }
 
     public function confirm(Request $request){
-
-        $assess=Assess::where('household_id',$this->household_id)
-            ->where('item_id',$this->item_id)
-            ->first();
-        if($assess->code!=136){
-            $result=['code'=>'error','message'=>'评估报告处于【'.$assess->state->name.'】，不能进行该操作','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('household.error')->with($result);
-            }
-        }
-
         DB::beginTransaction();
         try{
             $household=Household::sharedLock()
