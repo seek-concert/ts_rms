@@ -102,7 +102,7 @@
             <div class="widget-container-col ui-sortable">
                 <div class="widget-box ui-sortable-handle">
                     <div class="widget-header">
-                        <h5 class="widget-title">被征收户概括</h5>
+                        <h5 class="widget-title">项目概述饼状图</h5>
                     </div>
 
                     <div class="widget-body">
@@ -111,7 +111,7 @@
                             <div class="col-xs-6 col-sm-3 pricing-box">
                                 <div class="widget-box widget-color-orange">
                                     <div class="widget-header">
-                                        <h5 class="widget-title bigger lighter">摸底调查状态</h5>
+                                        <h5 class="widget-title bigger lighter">被征收户状态</h5>
                                     </div>
 
                                     <div class="widget-body">
@@ -125,7 +125,7 @@
                             <div class="col-xs-6 col-sm-3 pricing-box">
                                 <div class="widget-box widget-color-blue">
                                     <div class="widget-header">
-                                        <h5 class="widget-title bigger lighter">确权确户状态</h5>
+                                        <h5 class="widget-title bigger lighter">房源使用情况</h5>
                                     </div>
 
                                     <div class="widget-body">
@@ -139,7 +139,7 @@
                             <div class="col-xs-6 col-sm-3 pricing-box">
                                 <div class="widget-box widget-color-green">
                                     <div class="widget-header">
-                                        <h5 class="widget-title bigger lighter">房产评估状况</h5>
+                                        <h5 class="widget-title bigger lighter">资金使用状况</h5>
                                     </div>
 
                                     <div class="widget-body">
@@ -153,7 +153,7 @@
                             <div class="col-xs-6 col-sm-3 pricing-box">
                                 <div class="widget-box widget-color-grey">
                                     <div class="widget-header">
-                                        <h5 class="widget-title bigger lighter">协议签约比例</h5>
+                                        <h5 class="widget-title bigger lighter">兑付比例</h5>
                                     </div>
 
                                     <div class="widget-body">
@@ -189,13 +189,13 @@
     <script>
         $('.img-content').viewer('update');
         @if($code=='success')
-        // 摸底调查
-        var survey_nums_household=@json($edata['survey_nums']);
+        // 被征收户状态
+        var survey_nums_household=@json($edata['household_nums']);
         items=[];
         values=[];
         $.each(survey_nums_household,function (index,info) {
-            items.push((info.name_info|| '其他'));
-            values.push({value:info.survey_num,name:(info.name_info|| '其他')});
+            items.push((info.state.name|| '其他'));
+            values.push({value:info.household_num,name:(info.state.name|| '其他')});
         });
         echarts.init(document.getElementById('survey_nums_household')).setOption({
             tooltip : {
@@ -219,18 +219,18 @@
                 }
             ]
         });
-        //确权确户
-        var property_household=@json($edata['property_nums']);
+        //房源使用情况
+        var property_household=@json($edata['house_nums']);
         items=[];
         values=[];
         $.each(property_household,function (index,info) {
-            items.push((info.name_info|| '其他'));
-            values.push({value:info.property_num,name:(info.name_info|| '其他')});
+            items.push((info.names|| '其他'));
+            values.push({value:info.house_num,name:(info.names|| '其他')});
         });
         echarts.init(document.getElementById('property_household')).setOption({
             tooltip : {
                 trigger: 'item',
-                formatter: "{b}：<br/>{c} 户 <br/>({d}%)"
+                formatter: "{b}：<br/>{c} 处 <br/>({d}%)"
             },
             series : [
                 {
@@ -249,18 +249,18 @@
                 }
             ]
         });
-        //评估状况
-        var com_household=@json($edata['com_count']);
+        //资金使用状况
+        var com_household=@json($edata['funds']);
         items=[];
         values=[];
         $.each(com_household,function (index,info) {
-            items.push((info.state.name|| '其他'));
-            values.push({value:info.com_count,name:(info.state.name|| '其他')});
+            items.push((info.name_info|| '其他'));
+            values.push({value:info.funds_sums,name:(info.name_info|| '其他')});
         });
         echarts.init(document.getElementById('com_household')).setOption({
             tooltip : {
                 trigger: 'item',
-                formatter: "{b}：<br/>{c} 户 <br/>({d}%)"
+                formatter: "{b}：<br/>{c} 元 <br/>({d}%)"
             },
             series : [
                 {
@@ -279,13 +279,13 @@
                 }
             ]
         });
-        //协议签约
-        var contract_household=@json($edata['contract_count']);
+        //兑付比例
+        var contract_household=@json($edata['pay_count']);
         items=[];
         values=[];
         $.each(contract_household,function (index,info) {
-            items.push((info.state.name|| '其他'));
-            values.push({value:info.contract_count,name:(info.state.name|| '其他')});
+            items.push((info.name_info|| '其他'));
+            values.push({value:info.pay_count,name:(info.name_info|| '其他')});
         });
         echarts.init(document.getElementById('contract_household')).setOption({
             tooltip : {
