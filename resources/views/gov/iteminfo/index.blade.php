@@ -230,7 +230,7 @@
         echarts.init(document.getElementById('property_household')).setOption({
             tooltip : {
                 trigger: 'item',
-                formatter: "{b}：<br/>{c} 处 <br/>({d}%)"
+                formatter: "{b}：<br/>{c} 套 <br/>({d}%)"
             },
             series : [
                 {

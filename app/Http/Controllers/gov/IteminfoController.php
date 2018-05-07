@@ -74,7 +74,7 @@ class IteminfoController extends BaseitemController
                 ->where('amount','<',0)
                 ->first();
             $funds[0]['funds_sums'] = $funds_income_sums['funds_sum'];
-            $funds[0]['name_info'] = '收入总额';
+            $funds[0]['name_info'] = '录入总额';
             $funds[1]['funds_sums'] = $funds_expenditure_sums['funds_sum']?:'0';
             $funds[1]['name_info'] = '支出总额';
             $data['funds'] = $funds;
