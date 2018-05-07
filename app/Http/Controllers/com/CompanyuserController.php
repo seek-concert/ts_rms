@@ -307,7 +307,7 @@ class CompanyuserController extends BaseauthController
                 $code='error';
                 $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
                 $sdata=null;
-                $edata=$companyuser;
+                $edata=null;
                 $url=null;
                 DB::rollBack();
             }
