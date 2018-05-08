@@ -41,4 +41,4 @@ Route::any('/itemprogram_add','ItemprogramController@add')->name('g_itemprogram_
 Route::any('/itemprogram_edit','ItemprogramController@edit')->name('g_itemprogram_edit');
 
 /*---------- 评估报告审查 ----------*/
-Route::any('/assess_check','AssessController@edit')->name('g_assess_check');
+Route::any('/assess_check','AssessController@check')->name('g_assess_check');

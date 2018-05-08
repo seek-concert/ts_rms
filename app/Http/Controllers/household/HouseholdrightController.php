@@ -146,7 +146,7 @@ class HouseholdrightController extends BaseController{
             $edata=null;
             $url=null;
         }catch (\Exception $exception){
-            $code='error';
+             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
             $edata=null;
@@ -228,6 +228,39 @@ class HouseholdrightController extends BaseController{
             if(blank($household)){
                 throw new \Exception('保存失败！', 404404);
             }
+
+            /*评估状态修改---修改为带评估*/
+            $assess=Assess::sharedLock()
+                ->where('household_id',$this->household_id)
+                ->where('item_id',$this->item_id)
+                ->first();
+            if (blank($assess)){
+                throw new \Exception('暂无评估信息',404404);
+            }
+            $assess->code=130;
+            $assess->save();
+            if (blank($assess)) {
+                throw new \Exception('修改失败', 404404);
+            }
+
+            /*房产评估状态修改*/
+            $estate=Estate::sharedLock()
+                ->where('assess_id',$assess->id)
+                ->update(['code'=>130]);
+            if(blank($estate)){
+                throw new \Exception('修改失败', 404404);
+            }
+
+            /*资产评估状态修改*/
+            if($household->householddetail->getOriginal('has_assets')==1){
+                $assets=Assets::sharedLock()
+                    ->where('assess_id',$assess->id)
+                    ->update(['code'=>130]);
+                if(blank($assets)){
+                    throw new \Exception('修改失败', 404404);
+                }
+            }
+
             $code = 'success';
             $msg = '提交成功';
             $sdata = null;
@@ -235,13 +268,12 @@ class HouseholdrightController extends BaseController{
             $url = route('h_householdright');
             DB::commit();
         }catch (\Exception $exception) {
-            var_dump($exception->getMessage());
-            DB::rollBack();
             $code = 'error';
             $msg = $exception->getCode() == 404404 ? $exception->getMessage() : '保存失败';
             $sdata = null;
             $edata = null;
             $url = null;
+            DB::rollBack();
         }
         $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
         if($request->ajax()){

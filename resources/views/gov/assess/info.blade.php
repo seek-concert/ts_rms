@@ -7,10 +7,40 @@
 
     <div class="well well-sm">
         <a href="javascript:history.back();" class="btn">返回</a>
-        <a class="btn btn-success" type="button" href="{{route('g_assess_check',['item'=>$sdata['item']->id,'household_id'=>$sdata['assess']->household_id])}}">
-            <i class="ace-icon fa fa-check bigger-110"></i>
-            审查评估报告
-        </a>
+        @switch($sdata['assess']->code)
+            @case(132)
+                @if($sdata['household']->code==64)
+                <a class="btn btn-success" type="button" href="{{route('g_assess_check',['id'=>$sdata['assess']->id,'item'=>$sdata['assess']->item_id])}}">
+                    <i class="ace-icon fa fa-check bigger-110"></i>
+                    审查评估报告
+                </a>
+                @endif
+            @break
+            @case(133)
+            <a class="btn btn-success" type="button" disabled>
+                <i class="ace-icon fa fa-check-square-o bigger-110"></i>
+                评估报告已通过审查
+            </a>
+            @break
+            @case(134)
+            <a class="btn btn-danger" type="button" disabled>
+                <i class="ace-icon fa fa-close bigger-110"></i>
+                评估报告已驳回
+            </a>
+            @break
+            @case(135)
+            <a class="btn btn-danger" type="button" disabled>
+                <i class="ace-icon fa fa-close bigger-110"></i>
+                被征户已反对
+            </a>
+            @break
+            @case(136)
+            <a class="btn btn-success" type="button">
+                <i class="ace-icon fa fa-check-square-o bigger-110"></i>
+                被征户已同意
+            </a>
+            @break
+        @endswitch
     </div>
 
     <div class="widget-container-col ui-sortable">

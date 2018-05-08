@@ -17,8 +17,6 @@
                         </a>
                     </li>
 
-
-
                     @if(isset($sdata['householdright']))
                         <li class="">
                             <a data-toggle="tab" href="#householdright" aria-expanded="false">
@@ -113,6 +111,8 @@
                                 </div>
 
                             </div>
+                            @else
+                            <span class="editable editable-click">暂无面积争议</span>
                         @endif
                         @if(isset($sdata['householddetail']) && $sdata['householddetail']->getOriginal('area_dispute')==2)
                             <form class="form-horizontal" role="form" action="{{route('h_buildingarea_confirm')}}"
@@ -386,7 +386,7 @@
                                         <span class="editable editable-click">{{$sdata['householdestate']->has_assets}}</span>
                                     </div>
                                 </div>
-                                @if(isset($sdata['householdestate']->picture))
+                                @if(filled($sdata['householdestate']->picture))
                                     @foreach($sdata['householdestate']->picture as $names=>$picturepic)
                                         <div class="profile-info-row">
                                             <div class="profile-info-name"> {{$sdata['detail_filecates'][$names]}}：
