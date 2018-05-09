@@ -88,3 +88,23 @@ Route::namespace('com')->prefix('com')->group(function (){
         require 'web_com_login.php';
     });
 });
+
+/*========== 触摸屏端 ==========*/
+//Route::namespace('touch')->prefix('touch')->group(function (){
+//    /*---------- 登录后台 ----------*/
+//    Route::any('/','IndexController@index')->name('t_index'); //首页
+//    Route::any('/login','IndexController@login')->name('t_login'); //登录
+//    Route::any('/logout','IndexController@logout')->name('t_logout'); //退出
+//
+//    Route::middleware('CheckLogin:com_user,c_index')->group(function (){
+//        /*---------- 工具 ----------*/
+//        Route::any('/error','ToolsController@error')->name('t_error'); // 错误提示
+//        Route::any('/upl','ToolsController@upl')->name('t_upl'); // 文件上传
+//    });
+//
+//    Route::middleware('CheckLogin:com_user,c_index')->group(function (){
+//        require 'touch_com_login.php';
+//    });
+//});
+
+

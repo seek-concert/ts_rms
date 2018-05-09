@@ -54,7 +54,7 @@ class HouseholdrightController extends BaseController{
                     $query->select(['id','name']);
                 },
                 'landlayout'=>function($query){
-                    $query->select(['id','name','area']);
+                    $query->select(['id','name','area','picture']);
                 },
                 'state'=>function($query){
                     $query->select(['id','code','name']);
