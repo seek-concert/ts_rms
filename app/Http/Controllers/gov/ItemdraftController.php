@@ -82,14 +82,28 @@ class ItemdraftController extends BaseitemController
                 if($item->schedule_id!=3 || $item->process_id!=30 || $item->code != '22'){
                     throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
                 }
+
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['schedule_id',$item->schedule_id],
+                        ['process_id',31],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->get();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+
                 $itemdraft=Itemdraft::sharedLock()->where('item_id',$this->item_id)->first();
                 if(filled($itemdraft)){
                     throw new \Exception('征收意见稿已添加',404404);
                 }
                 /* ++++++++++ 检查推送 ++++++++++ */
-                $result=$this->hasNotice();
+               /* $result=$this->hasNotice();
                 $process=$result['process'];
-                $worknotice=$result['worknotice'];
+                $worknotice=$result['worknotice'];*/
 
                 $code = 'success';
                 $msg = '请求成功';

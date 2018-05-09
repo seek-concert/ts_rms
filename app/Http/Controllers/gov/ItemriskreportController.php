@@ -113,6 +113,19 @@ class ItemriskreportController extends BaseitemController
                 if($item->schedule_id!=4 || $item->process_id!=33 || $item->code != '2'){
                     throw new \Exception('当前项目处于【'.$item->schedule->name.' - '.$item->process->name.'('.$item->state->name.')】，不能进行当前操作',404404);
                 }
+
+                /* ++++++++++ 检查操作权限 ++++++++++ */
+                $count=Itemuser::sharedLock()
+                    ->where([
+                        ['item_id',$item->id],
+                        ['process_id',33],
+                        ['user_id',session('gov_user.user_id')],
+                    ])
+                    ->count();
+                if(!$count){
+                    throw new \Exception('您没有执行此操作的权限',404404);
+                }
+
                 /* ********** 评估报告 ********** */
                 $risk_report=Itemriskreport::sharedLock()->where('item_id',$this->item_id)->first();
                 if(filled($risk_report)){
@@ -129,11 +142,6 @@ class ItemriskreportController extends BaseitemController
                 if($number<$household_num){
                     throw new \Exception('还有被征收户没有完成风险评估调查',404404);
                 }
-
-                /* ++++++++++ 检查推送 ++++++++++ */
-                $result=$this->hasNotice();
-                $process=$result['process'];
-                $worknotice=$result['worknotice'];
 
                 $code = 'success';
                 $msg = '请求成功';
@@ -269,6 +277,16 @@ class ItemriskreportController extends BaseitemController
                     DB::statement($sql);
                 }
 
+                /*修改被征户状态*/
+                $household=Household::sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->where('code',66)
+                    ->update(['code'=>67]);
+                if(blank($household)){
+                    throw new \Exception('操作失败！',404404);
+                }
+
+                /*更改项目状态*/
                 $item->schedule_id=$worknotice->schedule_id;
                 $item->process_id=$worknotice->process_id;
                 $item->code=$worknotice->code;

@@ -10,6 +10,7 @@ namespace App\Http\Controllers\household;
 use App\Http\Model\Assess;
 use App\Http\Model\Assets;
 use App\Http\Model\Estate;
+use App\Http\Model\Householddetail;
 use App\Http\Model\Item;
 use App\Http\Model\Household;
 
@@ -130,8 +131,24 @@ class AssessController extends BaseController{
 
         DB::beginTransaction();
         try{
+            $household=Household::sharedLock()
+                ->with('householddetail')
+                ->find($this->household_id);
+            if($household->code!=64){
+                throw new \Exception('您现处于【'.$household->state->name.'】状态，不能进行评估确认', 404404);
+            }
+
+            $household->code=65;
+            $household->save();
+            if(blank($household)){
+                throw new \Exception('修改失败', 404404);
+            }
+
             $assess=Assess::sharedLock()
                 ->find($id);
+            if($assess->code!=133){
+                throw new \Exception('评估现处于【'.$assess->state->name.'】状态，不能进行确认', 404404);
+            }
             if (blank($assess)){
                 throw new \Exception('错误操作',404404);
             }
@@ -142,6 +159,7 @@ class AssessController extends BaseController{
                 throw new \Exception('修改失败', 404404);
             }
 
+            /*房产评估状态修改*/
             $estate=Estate::sharedLock()
                 ->where('assess_id',$id)
                 ->update(['code'=>$code]);
@@ -149,11 +167,14 @@ class AssessController extends BaseController{
                 throw new \Exception('修改失败', 404404);
             }
 
-            $assets=Assets::sharedLock()
-                ->where('assess_id',$id)
-                ->update(['code'=>$code]);
-            if(blank($assets)){
-                throw new \Exception('修改失败', 404404);
+            /*资产评估状态修改*/
+            if($household->householddetail->getOriginal('has_assets')==1){
+                $assets=Assets::sharedLock()
+                    ->where('assess_id',$id)
+                    ->update(['code'=>$code]);
+                if(blank($assets)){
+                    throw new \Exception('修改失败', 404404);
+                }
             }
 
             $code='success';
@@ -169,6 +190,7 @@ class AssessController extends BaseController{
             $edata=null;
             $url=null;
             $view='household.error';
+            DB::rollBack();
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
 
@@ -177,6 +199,9 @@ class AssessController extends BaseController{
         }else{
             return view($view)->with($result);
         }
+
     }
+
+
 
 }

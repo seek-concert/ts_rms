@@ -123,9 +123,11 @@ class  ItemriskController extends BaseController
                     }])
                     ->sharedLock()
                     ->find(session('household_user.user_id'));
-                if($household->code!='65'){
-                    throw new \Exception('您现处于【'.$household->state->name.'】状态，不能进行意见调查', 404404);
+                if($household->code!=65) {
+                    throw new \Exception('您现处于【' . $household->state->name . '】状态，不能进行意见调查', 404404);
                 }
+                $household->code=66;
+                $household->save();
 
                 $household->layout = Layout::pluck('name', 'id');
                 $result = ['code' => 'success', 'message' => '请求成功', 'sdata' =>['household'=>$household,'topic'=>$itemtopic] , 'edata' => new Itemrisk(), 'url' => null];
@@ -176,7 +178,7 @@ class  ItemriskController extends BaseController
                 }
                 $household = Household::sharedLock()
                     ->find(session('household_user.user_id'));
-                if($household->code!='65'){
+                if($household->code!=65){
                     throw new \Exception('您现处于【'.$household->state->name.'】状态，不能进行意见调查', 404404);
                 }
                 /* ++++++++++ 批量赋值 ++++++++++ */
@@ -216,7 +218,7 @@ class  ItemriskController extends BaseController
 
                 $household = Household::sharedLock()
                     ->find(session('household_user.user_id'));
-                $household->code=67;
+                $household->code=66;
                 $household->save();
                 if(blank($household)){
                     throw new \Exception('保存失败!',404404);

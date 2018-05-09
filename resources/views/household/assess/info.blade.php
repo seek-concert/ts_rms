@@ -218,7 +218,7 @@
     </div>
     <div class="clearfix form-actions">
         <div class="col-md-offset-4 col-md-7">
-            @if($sdata['assess']->code==133 || $sdata['assess']->code==132)
+            @if($sdata['assess']->code==133)
             <button class="btn btn-success" type="button" onclick="confirm({{$sdata['assess']->id}},136)">
                 <i class="ace-icon fa fa-check bigger-110"></i>
                同意该评估
