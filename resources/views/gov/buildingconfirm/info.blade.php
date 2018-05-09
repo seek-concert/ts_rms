@@ -848,10 +848,10 @@
     <script src="{{asset('viewer/viewer.min.js')}}"></script>
     <script>
         $('.img-content').viewer('update');
-        if ($('.fa-times').length == 0) {
-            $('#_sub').css('display', 'block');
-        } else {
+        if ($('.fa-times').length > 1) {
             $('#_sub').css('display', 'none');
+        } else {
+            $('#_sub').css('display', 'block');
         }
     </script>
 @endsection
