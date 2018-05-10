@@ -684,7 +684,6 @@ class LandlayoutController extends BaseitemController
                     }
                     if($household_ids!=[]){
                         Householddetail::whereIn('household_id',$household_ids)->update(['area_dispute'=>2,'updated_at'=>date('Y-m-d H:i:s')]);
-                        Estate::whereIn('household_id',$household_ids)->update(['area_dispute'=>2,'updated_at'=>date('Y-m-d H:i:s')]);
                     }
                 }
 
