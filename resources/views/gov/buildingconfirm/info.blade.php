@@ -237,13 +237,9 @@
                                                         <div class="profile-info-name"> 面积争议：</div>
                                                         <div class="profile-info-value">
                                                             <span class="editable editable-click">{{$edata['estate']->area_dispute}}</span>
-                                                            @if($edata['estate']->area_dispute != $edata['household_detail']->area_dispute)
+                                                                @if($edata['estate']->getOriginal('area_dispute')==1|| in_array($edata['household_detail']->getOriginal('area_dispute'),[1,2,4]))
                                                                     <i class="red fa fa-times fa-2x"></i>
-                                                                @else
-                                                                    @if($edata['estate']->getOriginal('area_dispute')==1|| in_array($edata['household_detail']->getOriginal('area_dispute'),[1,2,4]))
-                                                                        <i class="red fa fa-times fa-2x"></i>
-                                                                    @endif
-                                                            @endif
+                                                                @endif
                                                         </div>
                                                     </div>
 
@@ -602,12 +598,8 @@
                                                                 <div class="profile-info-name"> 状态：</div>
                                                                 <div class="profile-info-value">
                                                                     <span class="editable editable-click">{{$edata['estatebuildings'][$k]->state->name}}</span>
-                                                                    @if($infos->state->name != $edata['estatebuildings'][$k]->state->name)
-                                                                        @if($edata['estatebuildings'][$k]->code == 90 or ($infos->code == 93 || $infos->code == 95))
-
-                                                                        @else
+                                                                    @if(in_array($infos->code,[91,93]))
                                                                             <i class="red fa fa-times fa-2x"></i>
-                                                                        @endif
                                                                     @endif
                                                                 </div>
                                                             </div>
