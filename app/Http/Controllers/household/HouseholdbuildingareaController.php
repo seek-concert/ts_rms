@@ -15,6 +15,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Http\Model\Estate;
 
 class HouseholdbuildingareaController extends BaseController
 {
@@ -76,6 +77,19 @@ class HouseholdbuildingareaController extends BaseController
             if(blank($householddetail)){
                 throw new \Exception('保存失败！', 404404);
             }
+
+            if($area_dispute==3){
+                $estate=Estate::sharedLock()
+                    ->where('item_id',$this->item_id)
+                    ->where('household_id',$this->household_id)
+                    ->first();
+                $estate->area_dispute=2;
+                $estate->save();
+                if(blank($estate)){
+                    throw new \Exception('保存失败！', 404404);
+                }
+            }
+
             $code = 'success';
             $msg = '提交成功';
             $sdata = null;
