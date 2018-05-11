@@ -26,19 +26,13 @@ class HouseholdbuildingdealController extends BaseController
 
     /* ========== 详情 ========== */
     public function info(Request $request){
-        $id = $request->input('id');
-        if(blank($id)){
-            $result=['code'=>'error','message'=>'请先选择数据','sdata'=>null,'edata'=>null,'url'=>null];
-            if($request->ajax()){
-                return response()->json($result);
-            }else{
-                return view('gov.error')->with($result);
-            }
-        }
 
         /* ********** 当前数据 ********** */
         DB::beginTransaction();
-        $householdbuildingdeal=Householdbuildingdeal::sharedLock()->find($id);
+        $householdbuildingdeal=Householdbuildingdeal::sharedLock()
+            ->where('household_id',$this->household_id)
+            ->where('item_id',$this->item_id)
+            ->first();
         DB::commit();
         /* ++++++++++ 数据不存在 ++++++++++ */
         if(blank($householdbuildingdeal)){

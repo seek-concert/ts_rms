@@ -136,7 +136,7 @@
                                             {{$edata['household_detail']->area_dispute}}
                                             @if($edata['household_detail']->area_dispute==2)
                                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                <a href="{{route('h_householddetail_area')}}">去处理 >></a>
+                                                <a href="{{route('h_householdright')}}">去处理 >></a>
                                             @endif
                                         </span>
                                     </div>

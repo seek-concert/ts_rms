@@ -33,6 +33,7 @@ Route::any('/householddetail_area','HouseholddetailController@area')->name('h_ho
 Route::any('/householdright','HouseholdrightController@index')->name('h_householdright');
 Route::any('/householdright_info','HouseholdrightController@info')->name('h_householdright_info');
 Route::any('/householdright_confirm','HouseholdrightController@confirm')->name('h_householdright_confirm');
+Route::any('/householdbuildingdeal_info','HouseholdbuildingdealController@info')->name('h_householdbuildingdeal_info');
 
 /*---------- 兑付--汇总 ----------*/
 Route::any('/pay','PayController@index')->name('h_pay');

@@ -13,6 +13,7 @@ use App\Http\Model\Filecate;
 use App\Http\Model\Filetable;
 use App\Http\Model\Assess;
 use App\Http\Model\Household;
+use App\Http\Model\Householdmember;
 /*
 |--------------------------------------------------------------------------
 | 被征收户-确权确户
@@ -31,13 +32,20 @@ class HouseholdrightController extends BaseController{
         try{
 
             /*产权解决详情*/
-            $householdright=Householdright::where('household_id',$this->household_id)
+            $householdright=Householdright::sharedLock()
+                ->where('household_id',$this->household_id)
                 ->where('item_id',$this->item_id)
                 ->sharedLock()
                 ->first();
 
+            $member = Householdmember::sharedLock()
+                ->where('item_id',$this->item_id)
+                ->where('household_id',$this->household_id)
+                ->get();
+
             /*合法性认定*/
-            $householdbuildings=Householdbuilding::with([
+            $householdbuildings=Householdbuilding::sharedLock()
+                ->with([
                 'itemland'=>function($query){
                     $query->select(['id','address']);
                 },
@@ -54,14 +62,13 @@ class HouseholdrightController extends BaseController{
                     $query->select(['id','name']);
                 },
                 'landlayout'=>function($query){
-                    $query->select(['id','name','area']);
+                    $query->select(['id','name','area','picture']);
                 },
                 'state'=>function($query){
                     $query->select(['id','code','name']);
                 }])
                 ->where('item_id',$this->item_id)
                 ->where('household_id',$this->household_id)
-                ->where('code','<>',90)
                 ->orderBy('code','desc')
                 ->sharedLock()
                 ->get();
@@ -80,7 +87,8 @@ class HouseholdrightController extends BaseController{
                 ->first();
 
             /*被征户信息*/
-            $householddetail=Householddetail::with([
+            $householddetail=Householddetail::sharedLock()
+                ->with([
                 'itemland'=>function($query){
                     $query->select(['id','address']);
                 },
@@ -100,7 +108,8 @@ class HouseholdrightController extends BaseController{
 
 
             /*资产详情*/
-            $householdassetss=Householdassets::with([
+            $householdassetss=Householdassets::sharedLock()
+                ->with([
                     'itemland'=>function($query){
                         $query->select(['id','address']);
                     },
@@ -113,7 +122,8 @@ class HouseholdrightController extends BaseController{
                 ->get();
 
             /*房产详情*/
-            $householdestate=Estate::where('item_id',$this->item_id)
+            $householdestate=Estate::sharedLock()
+                ->where('item_id',$this->item_id)
                 ->where('household_id',$this->household_id)
                 ->sharedLock()
                 ->first();
@@ -121,7 +131,8 @@ class HouseholdrightController extends BaseController{
             $detail_filecates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
 
             /*公共附属物*/
-            $itempublics=Itempublic::with(['itembuilding'])
+            $itempublics=Itempublic::sharedLock()
+                ->with(['itembuilding'])
                 ->where('item_id',$this->item_id)
                 ->where('land_id',session('household_user.land_id'))
                 ->sharedLock()
@@ -137,22 +148,25 @@ class HouseholdrightController extends BaseController{
                 'householdright'=>$householdright,
                 'householdbuildings'=>$householdbuildings,
                 'householdbuildingarea'=>$householdbuildingarea,
-                'householdassetss'=>$householdassetss,
+                'householdassets'=>$householdassetss,
                 'householdestate'=>$householdestate,
                 'detail_filecates'=>$detail_filecates,
                 'itempublics'=>$itempublics,
-                'building_check'=>$building_check
+                'building_check'=>$building_check,
+                'member'=>$member,
+                'membermodel' => new Householdmember()
             ];
             $edata=null;
             $url=null;
+            DB::commit();
         }catch (\Exception $exception){
              $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
             $edata=null;
             $url=null;
+            DB::rollBack();
         }
-        DB::commit();
 
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
