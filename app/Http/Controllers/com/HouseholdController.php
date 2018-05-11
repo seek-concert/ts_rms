@@ -511,7 +511,12 @@ class HouseholdController extends BaseitemController
                     $estate = Estate::lockforupdate()->find($id);
                     /* ++++++++++ 批量赋值 ++++++++++ */
                     $estate->fill($request->all());
-                    $estate->editOther($request);
+                    if(in_array($estate->getOriginal('dispute'),[0,1])&&in_array($request->input('dispute'),[0,1])){
+                        $estate->dispute = $request->input('dispute');
+                    }
+                    if(in_array($estate->getOriginal('area_dispute'),[0,1])&&in_array($request->input('area_dispute'),[0,1])){
+                        $estate->area_dispute = $request->input('area_dispute');
+                    }
                     $estate->save();
                     if (blank($estate)) {
                         throw new \Exception('修改失败', 404404);

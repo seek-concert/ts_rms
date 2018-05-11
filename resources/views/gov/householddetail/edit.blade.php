@@ -40,11 +40,19 @@
             <label class="col-sm-3 control-label no-padding-right" for="dispute"> 产权争议： </label>
             <div class="col-sm-9 radio">
                 @foreach($sdata['detailmodel']->dispute as $key => $value)
-                    @if($key!=2)
-                    <label>
-                        <input name="dispute" type="radio" class="ace" value="{{$key}}" @if($key==$sdata['household']->getOriginal('dispute')) checked @endif >
-                        <span class="lbl">{{$value}}</span>
-                    </label>
+                    @if(in_array($sdata['household']->getOriginal('dispute'),[0,1]))
+                        @if($key==0||$key==1)
+                        <label>
+                            <input name="dispute" type="radio" class="ace" value="{{$key}}" @if($key==$sdata['household']->getOriginal('dispute')) checked @endif>
+                            <span class="lbl">{{$value}}</span>
+                        </label>
+                        @endif
+                    @else
+                        <label>
+                            <input name="dispute" type="radio" class="ace" value="{{$key}}" @if($key==$sdata['household']->getOriginal('dispute')) checked @endif @if($sdata['household']->getOriginal('dispute')==2) disabled @endif>
+                            <span class="lbl">{{$value}}</span>
+                        </label>
+                        <input type="hidden" name="dispute" value="{{$sdata['household']->getOriginal('dispute')}}">
                     @endif
                 @endforeach
             </div>
@@ -55,11 +63,19 @@
             <label class="col-sm-3 control-label no-padding-right" for="area_dispute"> 面积争议： </label>
             <div class="col-sm-9 radio">
                 @foreach($sdata['detailmodel']->area_dispute as $key => $value)
-                    @if($key==0||$key==1)
-                    <label>
-                        <input name="area_dispute" type="radio" class="ace" value="{{$key}}" @if($key==$sdata['household']->getOriginal('area_dispute')) checked @endif >
-                        <span class="lbl">{{$value}}</span>
-                    </label>
+                    @if(in_array($sdata['household']->getOriginal('area_dispute'),[0,1]))
+                        @if($key==0||$key==1)
+                            <label>
+                                <input name="area_dispute" type="radio" class="ace" value="{{$key}}" @if($key==$sdata['household']->getOriginal('area_dispute')) checked @endif >
+                                <span class="lbl">{{$value}}</span>
+                            </label>
+                         @endif
+                    @else
+                        <label>
+                            <input name="area_dispute" type="radio" class="ace" value="{{$key}}" @if($key==$sdata['household']->getOriginal('area_dispute')) checked @endif  @if($sdata['household']->getOriginal('area_dispute')==2) disabled @endif>
+                            <span class="lbl">{{$value}}</span>
+                        </label>
+                        <input type="hidden" name="area_dispute" value="{{$sdata['household']->getOriginal('area_dispute')}}">
                     @endif
                 @endforeach
             </div>
