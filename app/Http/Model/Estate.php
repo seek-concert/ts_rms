@@ -13,7 +13,7 @@ class Estate extends Model
     use SoftDeletes;
     protected $table='com_assess_estate';
     protected $primaryKey='id';
-    protected $fillable=['picture','status','register','reg_inner','reg_outer','balcony','dispute','area_dispute',
+    protected $fillable=['picture','status','register','reg_inner','reg_outer','balcony',
     'def_use','real_use','has_assets','business','house_pic','sign'];
     protected $dates=['created_at','updated_at','deleted_at'];
     protected $casts = [
@@ -56,11 +56,13 @@ class Estate extends Model
         $this->attributes['household_id'] = $request->input('household_id');
         $this->attributes['land_id'] = $request->input('land_id');
         $this->attributes['building_id'] = $request->input('building_id');
-
+        $this->attributes['dispute'] = $request->input('dispute');
+        $this->attributes['area_dispute'] = $request->input('area_dispute');
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
-
+        $this->attributes['dispute'] = $request->input('dispute');
+        $this->attributes['area_dispute'] = $request->input('area_dispute');
     }
 
     /* ++++++++++ 获取房屋状况 ++++++++++ */

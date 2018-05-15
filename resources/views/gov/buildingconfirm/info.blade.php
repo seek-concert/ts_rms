@@ -16,7 +16,7 @@
         <input type="hidden" name="item" value="{{$edata['item_id']}}">
         <input type="hidden" name="detail_id" value="{{$edata['detail_id']}}">
         <span class="red">温馨提示：只有征收管理端和评估机构端两边被征收户信息和房屋建筑信息一样（当页面不会出现<i
-                    class="red fa fa-times fa-2x"></i>时）才能进行房产确认！</span>
+                    class="red fa fa-times fa-2x"></i>时）且争议处理完成（产权争议及面积争议处理完成），才能进行房产确认！</span>
         <div class="tabbable">
             <ul class="nav nav-tabs">
                 <li class="active">
@@ -223,7 +223,7 @@
                                                         <div class="profile-info-name"> 产权争议：</div>
                                                         <div class="profile-info-value">
                                                             <span class="editable editable-click">{{$edata['estate']->dispute}}</span>
-                                                            @if($edata['estate']->dispute != $edata['household_detail']->dispute)
+                                                            @if($edata['estate']->getOriginal('dispute')==1 || $edata['household_detail']->getOriginal('dispute')==1)
                                                                 <i class="red fa fa-times fa-2x"></i>
                                                             @endif
                                                         </div>
@@ -233,9 +233,9 @@
                                                         <div class="profile-info-name"> 面积争议：</div>
                                                         <div class="profile-info-value">
                                                             <span class="editable editable-click">{{$edata['estate']->area_dispute}}</span>
-                                                            @if($edata['estate']->area_dispute != $edata['household_detail']->area_dispute)
-                                                                <i class="red fa fa-times fa-2x"></i>
-                                                            @endif
+                                                                @if($edata['estate']->getOriginal('area_dispute')==1|| in_array($edata['household_detail']->getOriginal('area_dispute'),[1,2,4]))
+                                                                    <i class="red fa fa-times fa-2x"></i>
+                                                                @endif
                                                         </div>
                                                     </div>
 
@@ -594,12 +594,8 @@
                                                                 <div class="profile-info-name"> 状态：</div>
                                                                 <div class="profile-info-value">
                                                                     <span class="editable editable-click">{{$edata['estatebuildings'][$k]->state->name}}</span>
-                                                                    @if($infos->state->name != $edata['estatebuildings'][$k]->state->name)
-                                                                        @if($edata['estatebuildings'][$k]->code == 90 or ($infos->code == 93 || $infos->code == 95))
-
-                                                                        @else
+                                                                    @if(in_array($infos->code,[91,93]))
                                                                             <i class="red fa fa-times fa-2x"></i>
-                                                                        @endif
                                                                     @endif
                                                                 </div>
                                                             </div>

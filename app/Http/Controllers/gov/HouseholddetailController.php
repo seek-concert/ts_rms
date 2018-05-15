@@ -538,17 +538,26 @@ class HouseholddetailController extends BaseitemController
                     throw new \Exception($validator->errors()->first(),404404);
                 }
                 /* ++++++++++ 锁定数据模型 ++++++++++ */
-                $householddetail=Householddetail::lockForUpdate()->find($id);
+                $householddetail=Householddetail::with(['household'])->lockForUpdate()->find($id);
+                if(!in_array($householddetail->household->code,[60,61,62])){
+                    throw new \Exception('当前被征户状态不在调查中，无法修改数据!',404404);
+                }
                 if(blank($householddetail)){
                     throw new \Exception('指定数据项不存在',404404);
                 }
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $householddetail->fill($request->all());
-                $householddetail->editOther($request);
+                if(in_array($householddetail->getOriginal('dispute'),[0,1])&&in_array($request->input('dispute'),[0,1])){
+                    $householddetail->dispute = $request->input('dispute');
+                }
+                if(in_array($householddetail->getOriginal('area_dispute'),[0,1])&&in_array($request->input('area_dispute'),[0,1])){
+                    $householddetail->area_dispute = $request->input('area_dispute');
+                }
                 $householddetail->save();
                 if (blank($householddetail)) {
                     throw new \Exception('修改失败', 404404);
                 }
+
 
                 $code = 'success';
                 $msg = '修改成功';

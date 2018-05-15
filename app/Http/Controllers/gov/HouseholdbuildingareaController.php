@@ -199,6 +199,11 @@ class HouseholdbuildingareaController extends BaseitemController
                 if (blank($householddetail)) {
                     throw new \Exception('处理失败！', 404404);
                 }
+                /*---------------- 改为面积明确 ----------------*/
+                $estate =Estate::where('household_id',$household_id)->update(['area_dispute'=>2,'updated_at'=>date('Y-m-d H:i:s')]);
+                if (blank($estate)) {
+                    throw new \Exception('处理失败！', 404404);
+                }
                 /* ++++++++++ 批量赋值 ++++++++++ */
                 $householdbuildingarea = $model;
                 $householdbuildingarea->fill($request->input());

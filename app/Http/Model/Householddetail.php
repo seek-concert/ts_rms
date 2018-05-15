@@ -13,7 +13,7 @@ class Householddetail extends Model
     use SoftDeletes;
     protected $table='item_household_detail';
     protected $primaryKey='id';
-    protected $fillable=['status','register','reg_inner','reg_outer','balcony','dispute', 'area_dispute','picture','def_use','real_use',
+    protected $fillable=['status','register','reg_inner','reg_outer','balcony','picture','def_use','real_use',
         'has_assets','business','agree','repay_way', 'house_price','house_area','house_num','house_addr','more_price','layout_id','opinion',
         'receive_man','receive_tel','receive_addr','sign'];
     protected $dates=['created_at','updated_at','deleted_at'];
@@ -58,10 +58,13 @@ class Householddetail extends Model
         $this->attributes['household_id'] = $request->input('household_id');
         $this->attributes['land_id'] = $request->input('land_id');
         $this->attributes['building_id'] = $request->input('building_id');
+        $this->attributes['dispute'] = $request->input('dispute');
+        $this->attributes['area_dispute'] = $request->input('area_dispute');
     }
     /* ++++++++++ 设置修改数据 ++++++++++ */
     public function editOther($request){
-
+        $this->attributes['dispute'] = $request->input('dispute');
+        $this->attributes['area_dispute'] = $request->input('area_dispute');
     }
 
     /* ++++++++++ 获取房屋状况 ++++++++++ */
