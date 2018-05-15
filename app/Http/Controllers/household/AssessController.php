@@ -58,7 +58,7 @@ class AssessController extends BaseController{
                         ['item_id', $this->item_id],
                         ['household_id', $this->household_id]
                     ])
-                    ->whereIn('code',['135','133','136','132'])
+                    ->whereIn('code',['135','133','136'])
                     ->first();
 
             if(blank($assess)){

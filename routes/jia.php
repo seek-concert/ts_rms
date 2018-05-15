@@ -42,3 +42,7 @@ Route::any('/itemprogram_edit','ItemprogramController@edit')->name('g_itemprogra
 
 /*---------- 评估报告审查 ----------*/
 Route::any('/assess_check','AssessController@check')->name('g_assess_check');
+
+/*---------- excel表格导出测试 ----------*/
+Route::any('/household_export_demo','HouseholdController@export_demo')->name('g_household_export_demo');
+Route::any('/household_export','HouseholdController@export')->name('g_household_export');

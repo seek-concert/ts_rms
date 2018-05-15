@@ -6,6 +6,8 @@
 */
 namespace App\Http\Controllers\household;
 
+header('Access-Control-Allow-Origin:*');
+
 use App\Http\Controllers\Controller;
 use App\Http\Model\Household;
 use Illuminate\Http\Request;
@@ -14,10 +16,15 @@ use Illuminate\Support\Facades\Validator;
 
 class IndexController extends Controller
 {
+
     /* ========== 初始化 ========== */
     public function __construct()
     {
 
+    }
+
+    public function test(){
+        return response()->json(['code'=>'test','info'=>"this is a test"]);
     }
 
     /* ========== 登录页 ========== */
