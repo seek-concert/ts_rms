@@ -280,8 +280,8 @@ class ItemriskreportController extends BaseitemController
                 /*修改被征户状态*/
                 $household=Household::sharedLock()
                     ->where('item_id',$this->item_id)
-                    ->where('code',66)
-                    ->update(['code'=>67]);
+                    ->where('code',65)
+                    ->update(['code'=>66]);
                 if(blank($household)){
                     throw new \Exception('操作失败！',404404);
                 }

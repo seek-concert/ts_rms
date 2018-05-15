@@ -16,7 +16,13 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::any('/test','household\HomeController@index');
 
-Route::namespace('gov')->prefix('gov')->group(function (){
+
+Route::namespace('api')->group(function (){
+    Route::any('/login','IndexController@index')->name('login'); //登录
+    Route::any('/home', function (Request $request) {
+        return $request->path();
+    });
 
 });
