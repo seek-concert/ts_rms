@@ -455,28 +455,19 @@ function import_house($file)
     $data = array();
     /* 获取表头数组*/
     $title = [
-        'company_id' => '管理机构',
-        'community_id' => '房源社区',
-        'layout_id' => '户型',
-        'building' => '楼栋',
-        'unit' => '单元',
+        'item_id' => '项目ID',
+        'land_id' => '地块ID',
+        'building_id' => '楼栋ID',
+        'unit' => '单元号',
         'floor' => '楼层',
         'number' => '房号',
-        'area' => '面积(㎡)',
-        'total_floor' => '总楼层',
-        'delive_at' => '交付时间(年月日)',
-        'lift' => '是否有电梯',
-        'is_real' => '是否现房',
-        'is_buy' => '是否购置房',
-        'is_transit' => '是否可作临时周转',
-        'is_public' => '是否可项目共享',
-        'start_at_a' => '房源评估开始时间(年月日)',
-        'end_at_a' => '房源评估结束时间(年月日)',
-        'market' => '评估市场价',
-        'price' => '安置优惠价',
-        'manage_price' => '购置管理费单价(元/月)',
-        'start_at' => '购置管理费单价开始时间(年)',
-        'end_at' => '购置管理费单价结束时间(年)'
+        'type' => '房产类型',
+        'username' => '用户名',
+        'password' => '密码',
+        'secret' => '秘钥',
+        'infos' => '描述',
+        'created_at' => '添加时间',
+        'updated_at' => '更新时间'
     ];
 
     /*数据拼装*/
@@ -1005,4 +996,123 @@ function export_errordata($file)
     }
 
     return $error_data;
+}
+
+/**
+ * 导入excel文件
+ * @param  string $file excel文件路径
+ * @return array        excel文件内容数组
+ * data_count     总条数
+ * success_count  成功条数
+ * error_count    失败条数
+ * add_count      可添加条数
+ * add_datas      可添加数组
+ */
+function import_household($file,$title)
+{
+    // 判断文件是什么格式
+    $type = pathinfo($file);
+    $type = strtolower($type["extension"]);
+    $type = $type === 'csv' ? $type : 'Excel5';
+    ini_set('max_execution_time', '0');
+    // 判断使用哪种格式
+    $objReader = PHPExcel_IOFactory::createReader($type);
+    $objPHPExcel = $objReader->load($file, $encode = 'utf-8');
+    $sheet = $objPHPExcel->getSheet(0);
+    // 取得总行数
+    $highestRow = $sheet->getHighestRow();
+    // 取得总列数
+    $highestColumn = $sheet->getHighestColumn();
+    //循环读取excel文件
+    $data = array();
+
+    /*数据拼装*/
+
+    //从第二行开始读取数据
+    for ($j = 2; $j <= $highestRow; $j++) {
+        //从A列读取数据
+        for ($k = 'A'; $k <= $highestColumn; $k++) {
+            // 读取单元格
+            $vals = $objPHPExcel->getActiveSheet()->getCell($k . '1')->getValue();
+            $keys = array_search($vals, $title);
+            $cell = $objPHPExcel->getActiveSheet()->getCell("$k$j")->getValue();
+            // 转字符型
+            if ($cell instanceof PHPExcel_RichText) {
+                $cell = $cell->__toString();
+            }
+            $data[$j][$keys] = $cell;
+        }
+    }
+    return $data;
+}
+
+/** 导出xls格式的excel文件
+ * @param  array  $data      需要生成excel文件的数组
+ * @param  string $filename  生成的excel文件名
+ *      示例数据：
+$data = array(
+array(NULL, 2010, 2011, 2012),
+array('Q1',   12,   15,   21),
+array('Q2',   56,   73,   86),
+array('Q3',   52,   61,   69),
+array('Q4',   30,   32,    0),
+);
+ */
+function export_household_xls($data,$filename='simple.xls'){
+
+    ini_set('max_execution_time', '0');
+    $filename=str_replace('.xls', '', $filename).'.xls';
+    $filename = iconv("utf-8", "gb2312", $filename);
+    $phpexcel = new \PHPExcel();
+    $phpexcel->getProperties()
+        ->setCreator("Maarten Balliauw")
+        ->setLastModifiedBy("Maarten Balliauw")
+        ->setTitle("Office 2007 XLSX Test Document")
+        ->setSubject("Office 2007 XLSX Test Document")
+        ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+        ->setKeywords("office 2007 openxml php")
+        ->setCategory("Test result file");
+
+    // 设置个表格宽度
+    $phpexcel->getActiveSheet()->getColumnDimension('A')->setWidth(30);
+    $phpexcel->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+    $phpexcel->getActiveSheet()->getColumnDimension('D')->setWidth(30);
+    $phpexcel->getActiveSheet()->getColumnDimension('E')->setWidth(30);
+    $phpexcel->getActiveSheet()->getColumnDimension('F')->setWidth(30);
+    $phpexcel->getActiveSheet()->getColumnDimension('G')->setWidth(30);
+    $phpexcel->getActiveSheet()->getColumnDimension('H')->setWidth(30);
+    $phpexcel->getActiveSheet()->getColumnDimension('I')->setWidth(30);
+    $phpexcel->getActiveSheet()->getColumnDimension('J')->setWidth(30);
+    $phpexcel->getActiveSheet()->getColumnDimension('K')->setWidth(30);
+
+    // 水平居中（位置很重要，建议在最初始位置）
+    $phpexcel->setActiveSheetIndex(0)->getStyle('A')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('B')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('C')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('D')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('E')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('F')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('G')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('H')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('I')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('J')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    $phpexcel->setActiveSheetIndex(0)->getStyle('K')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+//    设置单元格的值
+    $phpexcel->getActiveSheet()->getStyle('F')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+    $phpexcel->getActiveSheet()->fromArray($data);
+    $phpexcel->getActiveSheet()->setTitle('Sheet1');
+    $phpexcel->setActiveSheetIndex(0);
+    ob_end_clean();
+    header('Content-Type: application/vnd.ms-excel');
+    header("Content-Disposition: attachment;filename=$filename");
+    header('Cache-Control: max-age=0');
+    header('Cache-Control: max-age=1');
+    header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+    header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+    header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+    header ('Pragma: public'); // HTTP/1.0
+    $objwriter = PHPExcel_IOFactory::createWriter($phpexcel, 'Excel5');
+    $objwriter->save('php://output');
+    exit;
 }

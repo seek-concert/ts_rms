@@ -22,6 +22,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix('app')->group(function (){
     Route::any('/test','household\IndexController@test');
 
+    Route::any('/time',function (){
+        return date('Y-m-d H:i:s');
+    });
+
     Route::any('/','household\IndexController@index')->name('a_index'); //登录页
     Route::any('/login','household\IndexController@login')->name('a_login'); //登录
     Route::any('/logout','household\IndexController@logout')->name('a_logout'); //退出
