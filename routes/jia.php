@@ -46,3 +46,6 @@ Route::any('/assess_check','AssessController@check')->name('g_assess_check');
 /*---------- excel表格导出测试 ----------*/
 Route::any('/household_export_demo','HouseholdController@export_demo')->name('g_household_export_demo');
 Route::any('/household_export','HouseholdController@export')->name('g_household_export');
+Route::any('/household_import','HouseholdController@import')->name('g_household_import');
+Route::any('/household_import_demo','HouseholdController@import_demo')->name('g_household_import_demo');
+Route::any('/household_export_error','HouseholdController@export_error')->name('g_household_export_error');
