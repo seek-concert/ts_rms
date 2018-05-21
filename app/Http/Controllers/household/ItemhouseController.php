@@ -6,7 +6,7 @@
 */
 
 namespace App\Http\Controllers\household;
-
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\House;
 use App\Http\Model\Itemhouse;
 
@@ -17,11 +17,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 class ItemhouseController extends BaseController{
 
-    /* ++++++++++ 初始化 ++++++++++ */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+
 
     public function index(Request $request){
         /* ********** 查询条件 ********** */
@@ -93,7 +89,7 @@ class ItemhouseController extends BaseController{
 
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else {
             return view('household.itemhouse.index')->with($result);
@@ -139,7 +135,7 @@ class ItemhouseController extends BaseController{
             $view='household.itemhouse.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);

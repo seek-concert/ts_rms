@@ -19,20 +19,19 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 
-Route::prefix('app')->group(function (){
-    Route::any('/test','household\IndexController@test');
+Route::namespace('household')->prefix('app')->group(function (){
+    Route::any('/test','IndexController@test');
 
     Route::any('/time',function (){
-        return date('Y-m-d H:i:s');
+        return  response()->json(['time'=>date('Y-m-d H:i:s'),'code'=>'test']) ;
     });
 
-    Route::any('/','household\IndexController@index')->name('a_index'); //登录页
-    Route::any('/login','household\IndexController@login')->name('a_login'); //登录
-    Route::any('/logout','household\IndexController@logout')->name('a_logout'); //退出
 
+    Route::any('/','IndexController@index')->name('a_index'); //登录页
+    Route::any('/login','IndexController@login')->name('a_login'); //登录
+    Route::any('/logout','IndexController@logout')->name('a_logout'); //退出
 
-
-    Route::namespace('household')->middleware('CheckLogin:household_user,a_index')->group(function (){
+    Route::middleware('CheckApi')->group(function (){
 
         /*---------- 工具 ----------*/
         Route::any('/error','ToolsController@error')->name('a_error'); // 错误提示
@@ -42,13 +41,14 @@ Route::prefix('app')->group(function (){
         Route::any('/home','HomeController@index')->name('a_home');
 
         /*通知公告*/
-        Route::any('/news_info','NewsController@infor')->name('a_news_info');
+        Route::any('/news_info','NewsController@info')->name('a_news_info');
 
         /*评估机构投票*/
         Route::any('/vote','CompanyvoteController@index')->name('a_vote');
         Route::any('/vote_add','CompanyvoteController@add')->name('a_vote_add');
         Route::any('/vote_edit','CompanyvoteController@edit')->name('a_vote_edit');
         Route::any('/vote_info','CompanyvoteController@info')->name('a_vote_info');
+        Route::any('/company_info','CompanyController@info')->name('a_company_info');//评估机构详情
 
         /*入围机构*/
         Route::any('/itemcompany','ItemcompanyController@index')->name('a_itemcompany');

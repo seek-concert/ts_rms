@@ -5,7 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
-
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Household;
 
 use Illuminate\Http\Request;
@@ -14,11 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class   ItemhouseholdController extends BaseController
 {
-    /* ========== 初始化 ========== */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+
 
     /* ========== 个人信息 ========== */
     public function info(Request $request){
@@ -62,7 +58,7 @@ class   ItemhouseholdController extends BaseController
             $view='household.itemhousehold.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);
@@ -108,7 +104,7 @@ class   ItemhouseholdController extends BaseController
                 $view='household.itemhousehold.edit';
             }
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-            if($request->ajax()){
+            if($request->is('api/*') ||$request->ajax()){
                 return response()->json($result);
             }else{
                 return view($view)->with($result);
@@ -210,7 +206,7 @@ class   ItemhouseholdController extends BaseController
                 $view='household.itemhousehold.password';
             }
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-            if($request->ajax()){
+            if($request->is('api/*') ||$request->ajax()){
                 return response()->json($result);
             }else{
                 return view($view)->with($result);

@@ -455,28 +455,19 @@ function import_house($file)
     $data = array();
     /* 获取表头数组*/
     $title = [
-        'company_id' => '管理机构',
-        'community_id' => '房源社区',
-        'layout_id' => '户型',
-        'building' => '楼栋',
-        'unit' => '单元',
+        'item_id' => '项目ID',
+        'land_id' => '地块ID',
+        'building_id' => '楼栋ID',
+        'unit' => '单元号',
         'floor' => '楼层',
         'number' => '房号',
-        'area' => '面积(㎡)',
-        'total_floor' => '总楼层',
-        'delive_at' => '交付时间(年月日)',
-        'lift' => '是否有电梯',
-        'is_real' => '是否现房',
-        'is_buy' => '是否购置房',
-        'is_transit' => '是否可作临时周转',
-        'is_public' => '是否可项目共享',
-        'start_at_a' => '房源评估开始时间(年月日)',
-        'end_at_a' => '房源评估结束时间(年月日)',
-        'market' => '评估市场价',
-        'price' => '安置优惠价',
-        'manage_price' => '购置管理费单价(元/月)',
-        'start_at' => '购置管理费单价开始时间(年)',
-        'end_at' => '购置管理费单价结束时间(年)'
+        'type' => '房产类型',
+        'username' => '用户名',
+        'password' => '密码',
+        'secret' => '秘钥',
+        'infos' => '描述',
+        'created_at' => '添加时间',
+        'updated_at' => '更新时间'
     ];
 
     /*数据拼装*/

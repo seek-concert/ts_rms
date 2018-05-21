@@ -6,6 +6,7 @@
 */
 
 namespace App\Http\Controllers\household;
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Household;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Householdmembercrowd;
@@ -16,11 +17,7 @@ use Illuminate\Support\Facades\Validator;
 
 class  HouseholdmemberController extends BaseController
 {
-    /* ++++++++++ 初始化 ++++++++++ */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+
 
     public function info(Request $request)
     {
@@ -64,7 +61,7 @@ class  HouseholdmemberController extends BaseController
             $view='household.householdmember.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);

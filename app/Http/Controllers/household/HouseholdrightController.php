@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\household;
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Householdbuilding;
 use App\Http\Model\Householdassets;
 use Illuminate\Http\Request;
@@ -26,6 +27,8 @@ use App\Http\Model\Householdmember;
  * Time: 15:56
  */
 class HouseholdrightController extends BaseController{
+
+
     public function index(Request $request){
         /* ********** 查询 ********** */
         DB::beginTransaction();
@@ -92,9 +95,7 @@ class HouseholdrightController extends BaseController{
                 'itemland'=>function($query){
                     $query->select(['id','address']);
                 },
-                'household'=>function($query){
-                    $query->select(['code','id']);
-                },
+                'household','defbuildinguse','realbuildinguse',
                 'itembuilding'=>function($query){
                     $query->select(['id','building']);
                 },
@@ -105,6 +106,10 @@ class HouseholdrightController extends BaseController{
                 ->where('item_id',$this->item_id)
                 ->where('household_id',$this->household_id)
                 ->first();
+
+            $householddetail['o_dispute']=$householddetail->getOriginal('dispute');
+            $householddetail['o_area_dispute']=$householddetail->getOriginal('area_dispute');
+
 
 
             /*资产详情*/
@@ -123,20 +128,21 @@ class HouseholdrightController extends BaseController{
 
             /*房产详情*/
             $householdestate=Estate::sharedLock()
+                ->with(['defbuildinguse','realbuildinguse'])
                 ->where('item_id',$this->item_id)
                 ->where('household_id',$this->household_id)
                 ->sharedLock()
                 ->first();
             $file_table_id=Filetable::where('name','item_household_detail')->sharedLock()->value('id');
             $detail_filecates=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
-
             /*公共附属物*/
             $itempublics=Itempublic::sharedLock()
                 ->with(['itembuilding'])
                 ->where('item_id',$this->item_id)
-                ->where('land_id',session('household_user.land_id'))
+                ->where('land_id',$this->household->land_id)
                 ->sharedLock()
                 ->get();
+
 
             if(blank($householddetail)){
                 throw new \Exception('没有符合条件的数据',404404);
@@ -160,7 +166,8 @@ class HouseholdrightController extends BaseController{
             $url=null;
             DB::commit();
         }catch (\Exception $exception){
-             $code='error';
+
+            $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=null;
             $edata=null;
@@ -170,7 +177,7 @@ class HouseholdrightController extends BaseController{
 
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else {
             return view('household.householdright.index')->with($result);
@@ -258,7 +265,7 @@ class HouseholdrightController extends BaseController{
             DB::rollBack();
         }
         $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else{
             return view('household.error')->with($result);

@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Paysubject;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class  PaysubjectController extends BaseController{
             }
             DB::commit();
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-            if($request->ajax()){
+            if($request->is('api/*') ||$request->ajax()){
                 return response()->json($result);
             }else{
                 return view($view)->with($result);

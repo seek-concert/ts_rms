@@ -6,7 +6,7 @@
 */
 
 namespace App\Http\Controllers\household;
-
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Companyvote;
 use App\Http\Model\Company;
 use App\Http\Model\Household;
@@ -19,11 +19,6 @@ use Illuminate\Support\Facades\Validator;
 class  CompanyvoteController extends BaseController
 {
 
-    /* ++++++++++ 初始化 ++++++++++ */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function index(Request $request){
 
@@ -46,7 +41,7 @@ class  CompanyvoteController extends BaseController
         $companys=new LengthAwarePaginator($companys,$total,$per_page,$page);
         $companys->withPath(route('h_itemcompanyvote'));
         $companyvote=Companyvote::with(['company'=>function($query){
-            $query->select(['id','name'])->withCount(['companyvotes'=>function($query){
+            $query->withCount(['companyvotes'=>function($query){
                 $query->where('item_id',$this->item_id);
             }]);
         }])
@@ -56,7 +51,6 @@ class  CompanyvoteController extends BaseController
         ])
             ->sharedLock()
             ->first();
-
         /* ++++++++++ 选房时间 ++++++++++ */
         $itemctrl=Itemctrl::sharedLock()
             ->where([
@@ -76,11 +70,12 @@ class  CompanyvoteController extends BaseController
             'sdata'=>[
                 'item'=>$this->item_id,
                 'companyvote'=>$companyvote,
-                'itemctrl'=>$itemctrl
+                'itemctrl'=>$itemctrl,
+                'companys'=>$companys
             ],
-            'edata'=>$companys,
+            'edata'=>null,
             'url'=>null];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else {
             return view('household.itemcompanyvote.index')->with($result);
@@ -137,7 +132,13 @@ class  CompanyvoteController extends BaseController
         }
         /* ********** 结果 ********** */
         $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
-        return response()->json($result);
+
+        if($request->is('api/*') ||$request->ajax()){
+            return response()->json($result);
+        }else {
+            return view('household.error');
+        }
+
 
     }
 
@@ -176,7 +177,7 @@ class  CompanyvoteController extends BaseController
             $view='household.itemcompanyvote.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') || $request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);

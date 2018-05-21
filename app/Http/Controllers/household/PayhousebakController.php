@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Item;
 use App\Http\Model\Pay;
 use App\Http\Model\Itemctrl;
@@ -21,7 +22,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PayhousebakController extends BaseController{
     public $item;
-    public $item_id;
 
     /*选定的安置房缓存表*/
     public function index(Request $request){
@@ -293,6 +293,7 @@ class PayhousebakController extends BaseController{
 
             $view='household.payhousebak.index';
         }catch (\Exception $exception){
+            var_dump($exception);
             $code='error';
             $msg=$exception->getCode()==404404?$exception->getMessage():'网络异常';
             $sdata=$exception;
@@ -305,7 +306,7 @@ class PayhousebakController extends BaseController{
 
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else {
             return view($view)->with($result);
@@ -434,8 +435,8 @@ class PayhousebakController extends BaseController{
             $payhousebak->house_id=$request->input('house_id');
             $payhousebak->house_type=$request->input('house_type');
             $payhousebak->household_id=$this->household_id;
-            $payhousebak->land_id=session('household_user.land_id');
-            $payhousebak->building_id=session('household_user.building_id');
+            $payhousebak->land_id=$this->household->land_id  ;
+            $payhousebak->building_id=$this->household->building_id;
             $payhousebak->area=$house->area;
             $payhousebak->market=$house->itemhouseprice->market;
             $payhousebak->price=$house->itemhouseprice->price;
@@ -462,7 +463,7 @@ class PayhousebakController extends BaseController{
         }
         /* ********** 结果 ********** */
         $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);
@@ -502,7 +503,7 @@ class PayhousebakController extends BaseController{
             $view='household.payhousebak.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);
@@ -542,8 +543,8 @@ class PayhousebakController extends BaseController{
             }
             if(!Payhousebak::where([
                 ['house_id',$id],
-                ['household_id',session('household_user.user_id')],
-                ['item_id',session('household_user.item_id')]
+                ['household_id',$this->household_id],
+                ['item_id',$this->item_id]
             ])
                 ->delete()){
                 throw new \Exception('删除失败，请稍后重试!',404404);
@@ -564,10 +565,10 @@ class PayhousebakController extends BaseController{
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
 
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else{
-            return view($view)->with($result);
+            return view('household.error')->with($result);
         }
 
     }

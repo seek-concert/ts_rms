@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Crowd;
 use App\Http\Model\Householdmember;
 use App\Http\Model\Householdmembercrowd;
@@ -15,11 +16,7 @@ use Illuminate\Validation\Rule;
 
 class HouseholdmembercrowdController extends BaseController
 {
-    /* ++++++++++ 初始化 ++++++++++ */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+
 
     /* ========== 详情 ========== */
     public function info(Request $request){
@@ -58,7 +55,7 @@ class HouseholdmembercrowdController extends BaseController
             $view='household.householdmembercrowd.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);
