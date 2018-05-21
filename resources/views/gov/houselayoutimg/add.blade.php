@@ -63,7 +63,7 @@
 
                     <div class="col-sm-9">
                          <span class="btn btn-xs">
-                              <span onclick="open_gpy(this,2)" id="saomiao_id">扫描图片</span>
+                              <span onclick="open_gpy(this,1)" id="saomiao_id">扫描图片</span>
                           </span>
                         <ul class="ace-thumbnails clearfix img-content viewer">
 
