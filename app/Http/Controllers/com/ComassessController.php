@@ -420,6 +420,10 @@ class ComassessController extends BaseitemController
                     if(blank($comassess)){
                         throw new \Exception('数据错误', 404404);
                     }
+                    $household_state = Household::where('id',$household_id)->update(['code'=>'64','updated_at'=>date('Y-m-d H:i:s')]);
+                    if(blank($household_state)){
+                        throw new \Exception('数据错误',404404);
+                    }
                 }else{
                     $assets =  Assets::sharedLock()->where('assess_id',$estates->assess_id)->value('code');
                     if($assets==132){
@@ -427,6 +431,10 @@ class ComassessController extends BaseitemController
                         $comassess = Assess::where('id',$estates->assess_id)->update(['estate'=>$total,'code'=>'132','updated_at'=>date('Y-m-d H:i:s')]);
                         if(blank($comassess)){
                             throw new \Exception('数据错误', 404404);
+                        }
+                        $household_state = Household::where('id',$household_id)->update(['code'=>'64','updated_at'=>date('Y-m-d H:i:s')]);
+                        if(blank($household_state)){
+                            throw new \Exception('数据错误',404404);
                         }
                     }else{
                         $comassess = Assess::where('id',$estates->assess_id)->update(['estate'=>$total,'code'=>'131','updated_at'=>date('Y-m-d H:i:s')]);
@@ -454,6 +462,10 @@ class ComassessController extends BaseitemController
                     $comassess = Assess::where('id',$assets->assess_id)->update(['estate'=>$total,'code'=>'132','updated_at'=>date('Y-m-d H:i:s')]);
                     if(blank($comassess)){
                         throw new \Exception('数据错误', 404404);
+                    }
+                    $household_state = Household::where('id',$household_id)->update(['code'=>'64','updated_at'=>date('Y-m-d H:i:s')]);
+                    if(blank($household_state)){
+                        throw new \Exception('数据错误',404404);
                     }
                 }else{
                     $comassess = Assess::where('id',$assets->assess_id)->update(['estate'=>$total,'code'=>'131','updated_at'=>date('Y-m-d H:i:s')]);
@@ -804,10 +816,7 @@ class ComassessController extends BaseitemController
                         if(blank($comassess)){
                             throw new \Exception('数据错误', 404404);
                         }
-                        $household_state = Household::where('id',$household_id)->update(['code'=>'65','updated_at'=>date('Y-m-d H:i:s')]);
-                        if(blank($household_state)){
-                            throw new \Exception('数据错误',404404);
-                        }
+
                     }else{
                         $assets =  Assets::sharedLock()->where('assess_id',$estates->assess_id)->value('code');
                         if($assets==131||$assets==132){
@@ -820,18 +829,11 @@ class ComassessController extends BaseitemController
                             if(blank($comassess)){
                                 throw new \Exception('数据错误', 404404);
                             }
-                            $household_state = Household::where('id',$household_id)->update(['code'=>'65','updated_at'=>date('Y-m-d H:i:s')]);
-                            if(blank($household_state)){
-                                throw new \Exception('数据错误',404404);
-                            }
+
                         }else{
                             $comassess = Assess::where('id',$estates->assess_id)->update(['estate'=>$total,'code'=>'131','updated_at'=>date('Y-m-d H:i:s')]);
                             if(blank($comassess)){
                                 throw new \Exception('数据错误', 404404);
-                            }
-                            $household_state = Household::where('id',$household_id)->update(['code'=>'64','updated_at'=>date('Y-m-d H:i:s')]);
-                            if(blank($household_state)){
-                                throw new \Exception('数据错误',404404);
                             }
                         }
                     }
@@ -860,18 +862,10 @@ class ComassessController extends BaseitemController
                         if(blank($comassess)){
                             throw new \Exception('数据错误', 404404);
                         }
-                        $household_state = Household::where('id',$household_id)->update(['code'=>'65','updated_at'=>date('Y-m-d H:i:s')]);
-                        if(blank($household_state)){
-                            throw new \Exception('数据错误',404404);
-                        }
                     }else{
                         $comassess = Assess::where('id',$assets->assess_id)->update(['estate'=>$total,'code'=>'131','updated_at'=>date('Y-m-d H:i:s')]);
                         if(blank($comassess)){
                             throw new \Exception('数据错误', 404404);
-                        }
-                        $household_state = Household::where('id',$household_id)->update(['code'=>'64','updated_at'=>date('Y-m-d H:i:s')]);
-                        if(blank($household_state)){
-                            throw new \Exception('数据错误',404404);
                         }
                     }
                     /* ++++++++++ 查询评估师评估记录数据 ++++++++++ */

@@ -14,6 +14,10 @@ Route::any('/', function () {
     return view('welcome');
 });
 
+/*+++++++++++++++ 【高拍仪】 ++++++++++++++++*/
+Route::any('/gaopaiyi',function (){
+    return view('gaopaiyi');
+})->name('g_gaopaiyi');
 
 /*========== 征收管理端 ==========*/
 Route::namespace('gov')->prefix('gov')->group(function (){
@@ -26,6 +30,7 @@ Route::namespace('gov')->prefix('gov')->group(function (){
         /*---------- 工具 ----------*/
         Route::any('/error','ToolsController@error')->name('g_error'); // 错误提示
         Route::any('/upl','ToolsController@upl')->name('g_upl'); // 文件上传
+        Route::any('/gpy_upl','ToolsController@gaopaiyi_upl')->name('g_gaopaiyi_upl'); // 高拍仪文件上传
         Route::any('/noticenum','ToolsController@noticenum')->name('g_noticenum'); // 工作提醒数量
     });
 

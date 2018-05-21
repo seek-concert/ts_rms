@@ -34,6 +34,34 @@ class ToolsController extends BaseController
         return response()->json($result);
     }
 
+    /* ========== 高拍仪上传文件 ========== */
+    public function gaopaiyi_upl(Request $request){
+        try{
+            $files=$request->file();
+            if(!$files){
+                throw new \Exception('error',404404);
+            }
+            $keys=array_keys($files);
+            if(!$keys){
+                throw new \Exception('error',404404);
+            }
+            $file=$files[$keys[0]];
+            if(!$file){
+                throw new \Exception('error',404404);
+            }
+            $uploads = $file->isValid();
+            if(!$uploads){
+                throw new \Exception('error',404404);
+            }
+            $path=$file->storeAs('public/'.date('ymd'),date('YmdHis'.rand(10,99)).'.jpg');
+            return 'fieldname = /storage/'.$path;
+        }catch(\Exception $e){
+            if($e->getCode() == 404404){
+                return false;
+            }
+        }
+    }
+
     /* ========== 错误提示页 ========== */
     public function error(Request $request){
 
