@@ -61,7 +61,7 @@
                     </div>
                 </div>
                 @endif
-                @foreach($edata as $company)
+                @foreach($sdata['companys'] as $company)
                     <div class="col-xs-6 col-sm-3 pricing-box">
                         <div class="widget-box widget-color-green">
                             <div class="widget-header">

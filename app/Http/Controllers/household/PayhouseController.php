@@ -6,7 +6,7 @@
 */
 
 namespace App\Http\Controllers\household;
-
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\House;
 use App\Http\Model\Household;
 use App\Http\Model\Householdmember;
@@ -391,7 +391,7 @@ class PayhouseController extends BaseController
         }
         $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
 
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else{
             return view('household.error')->with($result);

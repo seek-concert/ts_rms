@@ -5,7 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
-
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Itemcompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,11 +13,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 class ItemcompanyController extends BaseController{
 
-    /* ++++++++++ 初始化 ++++++++++ */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+
 
     public function index(Request $request){
 
@@ -68,7 +64,7 @@ class ItemcompanyController extends BaseController{
             'sdata'=>$sdata,
             'edata'=>null,
             'url'=>null];
-        if($request->ajax()){
+        if($request->is('api/*') || $request->ajax()){
             return response()->json($result);
         }else {
             return view('household.itemcompany.index')->with($result);

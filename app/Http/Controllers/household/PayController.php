@@ -5,7 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
-
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Itemreward;
 use App\Http\Model\Itemrisk;
 use App\Http\Model\Item;
@@ -885,7 +885,7 @@ class PayController extends BaseController{
             }
 
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-            if($request->ajax()){
+            if($request->is('api/*') ||$request->ajax()){
                 return response()->json($result);
             }else{
                 return view($view)->with($result);
@@ -939,7 +939,7 @@ class PayController extends BaseController{
             }
             DB::commit();
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-            if($request->ajax()){
+            if($request->is('api/*') ||$request->ajax()){
                 return response()->json($result);
             }else{
                 return view($view)->with($result);

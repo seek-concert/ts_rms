@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Household;
 use App\Http\Model\Householdbuildingarea;
 use App\Http\Model\Householddetail;
@@ -18,11 +19,7 @@ use Illuminate\Validation\Rule;
 
 class HouseholdbuildingdealController extends BaseController
 {
-    /* ++++++++++ 初始化 ++++++++++ */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+
 
     /* ========== 详情 ========== */
     public function info(Request $request){
@@ -54,7 +51,7 @@ class HouseholdbuildingdealController extends BaseController
             $view='household.householdbuildingdeal.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if( $request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);

@@ -6,6 +6,7 @@
 */
 
 namespace App\Http\Controllers\household;
+header('Access-Control-Allow-Origin:*');
 
 use App\Http\Model\Assess;
 use App\Http\Model\Assets;
@@ -19,13 +20,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 class AssessController extends BaseController{
 
-
-
-    /* ++++++++++ 初始化 ++++++++++ */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function info(Request $request){
         
@@ -110,7 +104,7 @@ class AssessController extends BaseController{
 
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') || $request->ajax()){
             return response()->json($result);
         }else {
             return view($view)->with($result);
@@ -194,7 +188,7 @@ class AssessController extends BaseController{
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
 
-        if($request->ajax()){
+        if($request->is('api/*') || $request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);

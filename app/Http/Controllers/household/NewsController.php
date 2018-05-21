@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\News;
 use App\Http\Model\Item;
 use App\Http\Model\Itemcrowd;
@@ -23,7 +24,7 @@ class NewsController extends BaseController{
         $id=$request->input('id');
         if(!$id){
             $result=['code'=>'error', 'message'=>'错误操作', 'sdata'=>null, 'edata'=>null, 'url'=>null];
-            if($request->ajax()){
+            if($request->is('api/*') ||$request->ajax()){
                 return response()->json($result);
             }else {
                 return view('household.error')->with($result);
@@ -56,7 +57,7 @@ class NewsController extends BaseController{
                     ->where([['item_id',$this->item_id],['code',22]])
                     ->first();
                 $subjects=Itemsubject::with(['subject'=>function($query){
-                    $query->select(['id','name']);
+                    $query->select(['id','name','infos']);
                 }])
                     ->sharedLock()
                     ->where('item_id',$this->item_id)
@@ -114,7 +115,7 @@ class NewsController extends BaseController{
             DB::rollback();
         }
         $result=['code'=>$code, 'message'=>$msg, 'sdata'=>$sdata, 'edata'=>$edata, 'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else {
             return view($view)->with($result);

@@ -5,12 +5,13 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
-
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 class CompanyController extends BaseController{
+
     public function info(Request $request){
         $id=$request->input('id');
         if (!$id) {
@@ -53,7 +54,7 @@ class CompanyController extends BaseController{
             'sdata'=>$sdata,
             'edata'=>null,
             'url'=>null];
-        if($request->ajax()){
+        if($request->is('api/*') || $request->ajax()){
             return response()->json($result);
         }else {
             return view('household.company.info')->with($result);

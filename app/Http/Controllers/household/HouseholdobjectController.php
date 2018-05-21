@@ -5,6 +5,7 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Household;
 use App\Http\Model\Householdobject;
 use App\Http\Model\Itemobject;
@@ -19,11 +20,7 @@ use Illuminate\Validation\Rule;
 
 class HouseholdobjectController extends BaseController
 {
-    /* ++++++++++ 初始化 ++++++++++ */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+
 
 
     /* ========== 详情 ========== */
@@ -66,7 +63,7 @@ class HouseholdobjectController extends BaseController
             $view='household.householdobject.info';
         }
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if($request->is('api/*') ||$request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);

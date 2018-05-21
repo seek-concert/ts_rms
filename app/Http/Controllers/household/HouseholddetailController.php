@@ -6,7 +6,7 @@
 */
 
 namespace App\Http\Controllers\household;
-
+header('Access-Control-Allow-Origin:*');
 use App\Http\Model\Householddetail;
 use App\Http\Model\Household;
 use App\Http\Model\Householdmember;
@@ -18,14 +18,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Http\Model\Itemrisk;
+use App\Http\Model\Filecate;
+use App\Http\Model\Filetable;
 
 class  HouseholddetailController extends BaseController
 {
-    /* ++++++++++ 初始化 ++++++++++ */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+
 
     public function index(Request $request){
         /* ++++++++++ 是否调取接口(分页) ++++++++++ */
@@ -110,7 +108,7 @@ class  HouseholddetailController extends BaseController
 
         /* ********** 结果 ********** */
         $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-        if($request->ajax()){
+        if( $request->is('api/*') || $request->ajax()){
             return response()->json($result);
         }else {
             return view('household.householddetail.index')->with($result);
@@ -124,6 +122,10 @@ class  HouseholddetailController extends BaseController
         try{
             $data['item_id'] = $this->item_id;
             $data['household'] = new Household();
+
+            $file_table_id=Filetable::where('name','item_household_detail')->sharedLock()->value('id');
+            $data['detail_filecates']=Filecate::where('file_table_id',$file_table_id)->sharedLock()->pluck('name','filename');
+
             $data['household_detail'] = Householddetail::with([
                 'defbuildinguse'=>function($query){
                     $query->select(['id','name']);
@@ -137,7 +139,7 @@ class  HouseholddetailController extends BaseController
                 ->where('household_id',$this->household_id)
                 ->first();
 
-            $household=Household::with([
+            $data['household']=Household::with([
                 'itemland'=>function($query){
                     $query->select(['id','address'])
                         ->with(['adminunit'=>function($querys){
@@ -158,6 +160,13 @@ class  HouseholddetailController extends BaseController
                 },
                 'nation'=>function($query){
                     $query->select(['id','name']);
+                },
+                'householdmembercrowds'=>function($query){
+                    $query->with([
+                        'crowd'=>function($querys){
+                            $querys->select(['id','name']);
+                        }])
+                        ->select(['id','member_id','crowd_id','picture']);
                 }])
                 ->where('item_id',$this->item_id)
                 ->where('household_id',$this->household_id)
@@ -187,7 +196,8 @@ class  HouseholddetailController extends BaseController
                     $query->select(['id','name']);
                 },'state'=>function($query){
                     $query->select(['code','name']);
-                },])
+                },'defbuildinguse','realbuildinguse'
+                ])
                 ->where('item_id',$this->item_id)
                 ->where('household_id',$this->household_id)
                 ->sharedLock()
@@ -197,7 +207,7 @@ class  HouseholddetailController extends BaseController
                 ->where('number','<>',null)
                 ->sharedLock()
                 ->get();
-            $result=['code'=>'success','message'=>'获取成功','sdata'=>$household,'edata'=>$data,'url'=>null];
+            $result=['code'=>'success','message'=>'获取成功','sdata'=>$data,'edata'=>null,'url'=>null];
             $view='household.householddetail.info';
             DB::commit();
         }catch (\Exception $exception){
@@ -206,7 +216,7 @@ class  HouseholddetailController extends BaseController
             $view='household.error';
             DB::rollback();
         }
-        if($request->ajax()){
+        if($request->is('api/*') || $request->ajax()){
             return response()->json($result);
         }else{
             return view($view)->with($result);
@@ -313,7 +323,12 @@ class  HouseholddetailController extends BaseController
             }
             /* ++++++++++ 结果 ++++++++++ */
             $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
-            return response()->json($result);
+
+            if($request->is('api/*') || $request->ajax()){
+                return response()->json($result);
+            }else{
+                return view('household.error')->with($result);
+            }
         }
     }
 
@@ -360,7 +375,7 @@ class  HouseholddetailController extends BaseController
                 $view = 'household.itemrisk.edit';
             }
             $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => new Itemrisk(), 'url' => $url];
-            if ($request->ajax()) {
+            if ($request->is('api/*') || $request->ajax()) {
                 return response()->json($result);
             } else {
                 return view($view)->with($result);
@@ -413,7 +428,11 @@ class  HouseholddetailController extends BaseController
             }
             /* ********** 结果 ********** */
             $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
-            return response()->json($result);
+            if ($request->is('api/*') || $request->ajax()) {
+                return response()->json($result);
+            } else {
+                return view('household.error')->with($result);
+            }
         }
 
     }
@@ -543,7 +562,7 @@ class  HouseholddetailController extends BaseController
 
             /* ********** 结果 ********** */
             $result=['code'=>$code,'message'=>$msg,'sdata'=>$sdata,'edata'=>$edata,'url'=>$url];
-            if($request->ajax()){
+            if($request->is('api/*') ||$request->ajax()){
                 return response()->json($result);
             }else {
                 return view('household.householddetail.area')->with($result);
@@ -598,7 +617,11 @@ class  HouseholddetailController extends BaseController
             }
             /* ********** 结果 ********** */
             $result = ['code' => $code, 'message' => $msg, 'sdata' => $sdata, 'edata' => $edata, 'url' => $url];
-            return response()->json($result);
+            if ($request->is('api/*') || $request->ajax()) {
+                return response()->json($result);
+            } else {
+                return view('household.error')->with($result);
+            }
 
         }
 

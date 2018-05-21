@@ -5,8 +5,9 @@
 |--------------------------------------------------------------------------
 */
 namespace App\Http\Controllers\household;
-
+header('Access-Control-Allow-Origin:*');
 use App\Http\Controllers\Controller;
+use App\Http\Model\Household;
 use App\Http\Model\Item;
 use App\Http\Model\Itemuser;
 use App\Http\Model\Menu;
@@ -19,60 +20,69 @@ class BaseController extends Controller
     public $item_id;
     public $item;
     public $household_id;
+    public $household;
     /* ++++++++++ 初始化 ++++++++++ */
-    public function __construct()
+    public function __construct(Request $request)
     {
-        $this->middleware(function ($request,$next){
-            $this->item_id=session('household_user.item_id');
-            $this->household_id=session('household_user.user_id');
-            $this->item=Item::find($this->item_id);
-            if(blank($this->item)){
-                $result=['code'=>'error','message'=>'项目不存在','sdata'=>null,'edata'=>null,'url'=>null];
-                if(request()->ajax()){
-                    return response()->json($result);
-                }else{
-                    return back()->with($result);
-                }
-            }
-
-            $url=request()->getPathInfo();
-            /* ++++++++++ 当前菜单 ++++++++++ */
-            $current_menu=Menu::select('id','parent_id','name','infos','url')->where('url',$url)->sharedLock()->first();
-            if(blank($current_menu)){
-                $result=['code'=>'error','message'=>'功能已禁用或不存在','sdata'=>null,'edata'=>null,'url'=>null];
-                if(request()->ajax()){
-                    return response()->json($result);
-                }else{
-                    return back()->with($result);
-                }
-            }
-            if(!request()->ajax()){
-                /* ++++++++++ 所有父级菜单 ++++++++++ */
-                $parents_menus=$this->get_parents_menus($current_menu);
-                if($parents_menus){
-                    $parents_menus_ids=$parents_menus['parents_menus_ids'];
-                    $parents_menus=$parents_menus['parents_menus'];
-                    krsort($parents_menus);
-                }else{
-                    $parents_menus_ids=[];
-                    $parents_menus=[];
+        if($request->is('api/*')){
+            $this->household_id=$request->input('household_id');
+            $this->household=Household::find($this->household_id);
+            $this->item_id=$this->household->item_id;
+        }else{
+            $this->middleware(function ($request,$next){
+                $this->item_id=session('household_user.item_id');
+                $this->household_id=session('household_user.user_id');
+                $this->household=Household::find($this->household_id);
+                $this->item=Item::find($this->item_id);
+                if(blank($this->item)){
+                    $result=['code'=>'error','message'=>'项目不存在','sdata'=>null,'edata'=>null,'url'=>null];
+                    if(request()->ajax()){
+                        return response()->json($result);
+                    }else{
+                        return back()->with($result);
+                    }
                 }
 
-                /* ++++++++++ 所有菜单 ++++++++++ */
-                $where=[
-                    ['module',2],
-                    ['login',1],
-                    ['display',1],
-                ];
-                $menus=Menu::sharedLock()->where($where)->orderBy('sort','asc')->get();
-                /* ++++++++++ 导航菜单树 ++++++++++ */
-                $nav_menus=get_nav_li_list($menus,$current_menu->id,$parents_menus_ids);
+                $url=request()->getPathInfo();
+                /* ++++++++++ 当前菜单 ++++++++++ */
+                $current_menu=Menu::select('id','parent_id','name','infos','url')->where('url',$url)->sharedLock()->first();
+                if(blank($current_menu)){
+                    $result=['code'=>'error','message'=>'功能已禁用或不存在','sdata'=>null,'edata'=>null,'url'=>null];
+                    if(request()->ajax()){
+                        return response()->json($result);
+                    }else{
+                        return back()->with($result);
+                    }
+                }
+                if(!request()->ajax()){
+                    /* ++++++++++ 所有父级菜单 ++++++++++ */
+                    $parents_menus=$this->get_parents_menus($current_menu);
+                    if($parents_menus){
+                        $parents_menus_ids=$parents_menus['parents_menus_ids'];
+                        $parents_menus=$parents_menus['parents_menus'];
+                        krsort($parents_menus);
+                    }else{
+                        $parents_menus_ids=[];
+                        $parents_menus=[];
+                    }
 
-                view()->share(['nav'=>$nav_menus,'parents_menus'=>$parents_menus,'current_menu'=>$current_menu]);
-            }
+                    /* ++++++++++ 所有菜单 ++++++++++ */
+                    $where=[
+                        ['module',2],
+                        ['login',1],
+                        ['display',1],
+                    ];
+                    $menus=Menu::sharedLock()->where($where)->orderBy('sort','asc')->get();
+                    /* ++++++++++ 导航菜单树 ++++++++++ */
+                    $nav_menus=get_nav_li_list($menus,$current_menu->id,$parents_menus_ids);
 
-            return $next($request);
-        });
+                    view()->share(['nav'=>$nav_menus,'parents_menus'=>$parents_menus,'current_menu'=>$current_menu]);
+                }
+
+                return $next($request);
+            });
+        }
+
     }
 
     /* ========== 获取所有父级菜单 ========== */

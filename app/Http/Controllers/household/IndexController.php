@@ -54,7 +54,7 @@ class IndexController extends Controller
 
         /* ********** 查询用户 ********** */
         DB::beginTransaction();
-        $user=Household::select(['id','username','password','land_id','building_id','item_id'])
+        $user=Household::select(['id','username','password','land_id','building_id','item_id','secret'])
             ->where('username',$request->input('username'))
             ->sharedLock()
             ->first();
@@ -78,7 +78,13 @@ class IndexController extends Controller
             'land_id'=>$user->land_id
         ]]);
 
-        return response()->json(['code'=>'success','message'=>'登录成功','sdata'=>session('household_user'),'edata'=>null,'url'=>route('h_home')]);
+        $result=['code'=>'success','message'=>'登录成功','sdata'=>session('household_user'),'edata'=>null,'url'=>route('h_home')];
+
+        if($request->is('api/*') ||$request->ajax()){
+            return response()->json($result);
+        }else{
+            return view('household.error')->with($result);
+        }
     }
 
     /* ========== 退出登录 ========== */
